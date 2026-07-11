@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>618平板电脑淘客团长带货报告</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --background: 0 0% 100%; --foreground: 240 10% 3.9%; --card: 0 0% 100%;
+            --card-foreground: 240 10% 3.9%; --popover: 0 0% 100%; --popover-foreground: 240 10% 3.9%;
+            --primary: 240 5.9% 10%; --primary-foreground: 0 0% 98%; --secondary: 240 4.8% 95.9%;
+            --secondary-foreground: 240 5.9% 10%; --muted: 240 4.8% 95.9%; --muted-foreground: 240 3.8% 46.1%;
+            --accent: 240 4.8% 95.9%; --accent-foreground: 240 5.9% 10%; --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 0 0% 98%; --border: 240 5.9% 90%; --input: 240 5.9% 90%;
+            --ring: 240 5.9% 10%; --radius: 0.5rem;
+            --chart-1: 221 83% 53%; --chart-2: 212 95% 68%; --chart-3: 216 92% 60%;
+            --chart-4: 210 98% 78%; --chart-5: 212 97% 87%;
+        }
+        .dark {
+            --background: 240 10% 3.9%; --foreground: 0 0% 98%; --card: 240 10% 3.9%;
+            --card-foreground: 0 0% 98%; --popover: 240 10% 3.9%; --popover-foreground: 0 0% 98%;
+            --primary: 0 0% 98%; --primary-foreground: 240 5.9% 10%; --secondary: 240 3.7% 15.9%;
+            --secondary-foreground: 0 0% 98%; --muted: 240 3.7% 15.9%; --muted-foreground: 240 5% 64.9%;
+            --accent: 240 3.7% 15.9%; --accent-foreground: 0 0% 98%; --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 0 0% 98%; --border: 240 3.7% 15.9%; --input: 240 3.7% 15.9%;
+            --ring: 240 4.9% 83.9%;
+            --chart-1: 221 83% 53%; --chart-2: 212 95% 68%; --chart-3: 216 92% 60%;
+            --chart-4: 210 98% 78%; --chart-5: 212 97% 87%;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: hsl(var(--background)); color: hsl(var(--foreground)); line-height: 1.6; min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid hsl(var(--border)); }
+        .header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.025em; }
+        .header .subtitle { color: hsl(var(--muted-foreground)); font-size: 14px; margin-top: 4px; }
+        .header .disclaimer { color: hsl(38 95% 50% / 0.8); font-size: 12px; margin-top: 6px; padding: 4px 8px; background: hsl(38 95% 50% / 0.1); border-radius: 4px; display: inline-block; }
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .theme-toggle { display: flex; align-items: center; gap: 8px; background: hsl(var(--secondary)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 6px 12px; cursor: pointer; color: hsl(var(--foreground)); font-size: 13px; transition: all 0.2s; }
+        .theme-toggle:hover { background: hsl(var(--accent)); }
+        .tabs { display: flex; gap: 2px; background: hsl(var(--muted)); border-radius: var(--radius); padding: 4px; margin-bottom: 24px; width: fit-content; flex-wrap: wrap; }
+        .tab { padding: 8px 20px; border-radius: calc(var(--radius) - 2px); cursor: pointer; font-size: 14px; font-weight: 500; color: hsl(var(--muted-foreground)); transition: all 0.2s; border: none; background: transparent; }
+        .tab:hover { color: hsl(var(--foreground)); }
+        .tab.active { background: hsl(var(--background)); color: hsl(var(--foreground)); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 24px; transition: all 0.2s; margin-bottom: 16px; }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .card-header { margin-bottom: 16px; }
+        .card-title { font-size: 16px; font-weight: 600; }
+        .card-description { font-size: 13px; color: hsl(var(--muted-foreground)); margin-top: 4px; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .kpi-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 20px; transition: all 0.2s; }
+        .kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
+        .kpi-label { font-size: 13px; color: hsl(var(--muted-foreground)); font-weight: 500; }
+        .kpi-value { font-size: 28px; font-weight: 700; margin-top: 4px; letter-spacing: -0.02em; }
+        .kpi-unit { font-size: 14px; color: hsl(var(--muted-foreground)); font-weight: 400; }
+        .kpi-change { font-size: 12px; margin-top: 4px; }
+        .kpi-change.up { color: #22c55e; }
+        .kpi-change.down { color: #ef4444; }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .chart-grid .full-width { grid-column: 1 / -1; }
+        .chart-container { width: 100%; height: 400px; }
+        .chart-container.small { height: 350px; }
+        .chart-container.large { height: 500px; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; padding: 12px 16px; font-weight: 600; color: hsl(var(--muted-foreground)); border-bottom: 1px solid hsl(var(--border)); font-size: 13px; white-space: nowrap; }
+        td { padding: 12px 16px; border-bottom: 1px solid hsl(var(--border)); white-space: nowrap; }
+        tr:hover td { background: hsl(var(--muted) / 0.3); }
+        .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: 700; }
+        .rank-1 { background: #fbbf24; color: #000; }
+        .rank-2 { background: #94a3b8; color: #000; }
+        .rank-3 { background: #d97706; color: #fff; }
+        .rank-other { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
+        .badge { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+        .badge-blue { background: hsl(221 83% 53% / 0.15); color: hsl(221 83% 63%); }
+        .badge-orange { background: hsl(24 95% 53% / 0.15); color: hsl(24 95% 63%); }
+        .badge-green { background: hsl(142 71% 45% / 0.15); color: hsl(142 71% 55%); }
+        .badge-purple { background: hsl(270 70% 60% / 0.15); color: hsl(270 70% 70%); }
+        .badge-gray { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
+        .badge-red { background: hsl(0 84% 60% / 0.15); color: hsl(0 84% 70%); }
+        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid hsl(var(--border)); }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: var(--radius); padding: 32px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal h3 { font-size: 20px; margin-bottom: 16px; }
+        .modal-close { float: right; cursor: pointer; font-size: 20px; color: hsl(var(--muted-foreground)); background: none; border: none; }
+        @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } .kpi-grid { grid-template-columns: repeat(2, 1fr); } .header { flex-direction: column; align-items: flex-start; gap: 16px; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-content.active { animation: fadeIn 0.3s ease; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: hsl(var(--muted)); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.5); }
+
+        /* Insight-specific styles */
+        .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .insight-grid .full-width { grid-column: 1 / -1; }
+        .highlight-card { border-left: 4px solid #22c55e; }
+        .lowlight-card { border-left: 4px solid #ef4444; }
+        .insight-item { padding: 16px; border: 1px solid hsl(var(--border)); border-radius: var(--radius); margin-bottom: 12px; }
+        .insight-item h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+        .insight-item .metric { font-size: 14px; color: hsl(var(--muted-foreground)); margin-bottom: 4px; }
+        .insight-item .detail { font-size: 13px; color: hsl(var(--muted-foreground)); margin-bottom: 8px; }
+        .insight-item .suggestion { font-size: 13px; padding: 8px 12px; background: hsl(var(--muted) / 0.3); border-radius: 4px; }
+        .insight-item .suggestion::before { content: "💡 "; }
+        .strategy-matrix { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .strategy-card { padding: 20px; border: 1px solid hsl(var(--border)); border-radius: var(--radius); }
+        .strategy-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+        .strategy-card .best-type { font-size: 14px; margin-bottom: 4px; }
+        .strategy-card .metrics { font-size: 13px; color: hsl(var(--muted-foreground)); }
+        .action-impact-table { font-size: 13px; }
+        .action-impact-table td, .action-impact-table th { padding: 8px 12px; }
+        .change-positive { color: #22c55e; font-weight: 600; }
+        .change-negative { color: #ef4444; font-weight: 600; }
+        .correlation-badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 9999px; font-size: 14px; font-weight: 600; }
+        .corr-weak { background: hsl(24 95% 53% / 0.15); color: hsl(24 95% 63%); }
+        .corr-strong { background: hsl(142 71% 45% / 0.15); color: hsl(142 71% 55%); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📊 618平板电脑淘客团长带货报告</h1>
+                <div class="subtitle">统计周期：2026/5/13 - 2026/6/18 · 共37天 · 含深度洞察分析</div>
+                <div class="disclaimer">⚠️ 数据声明：本报告中淘客数据为支付口径，并非实际确收口径数据，仅供团长评估使用，较实际数据偏大。</div>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">深色模式</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('overview')">总览</button>
+            <button class="tab" onclick="switchTab('trend')">趋势分析</button>
+            <button class="tab" onclick="switchTab('leader')">团长排行</button>
+            <button class="tab" onclick="switchTab('type')">类型对比</button>
+            <button class="tab" onclick="switchTab('item')">商品分析</button>
+            <button class="tab" onclick="switchTab('action')">动作明细</button>
+            <button class="tab" onclick="switchTab('insight')">🔍 洞察分析</button>
+        </div>
+
+        <!-- Tab: Overview -->
+        <div id="tab-overview" class="tab-content active">
+            <div class="kpi-grid" id="kpiGrid"></div>
+            <!-- Overview Insights -->
+            <div class="card" style="margin-bottom:16px;border-left:4px solid #3b82f6">
+                <div class="card-header">
+                    <div class="card-title">📋 总览核心洞察</div>
+                </div>
+                <div id="overviewInsights" style="font-size:14px;line-height:1.8"></div>
+            </div>
+            <div class="chart-grid">
+                <div class="card full-width">
+                    <div class="card-header">
+                        <div class="card-title">每日GMV与进店人数趋势</div>
+                        <div class="card-description">蓝色柱状图为每日付款金额，红色折线为进店人数</div>
+                    </div>
+                    <div id="chartOverviewTrend" class="chart-container"></div>
+                </div>
+            </div>
+            <div class="chart-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">团长GMV排行 TOP 8</div>
+                        <div class="card-description">按付款金额降序排列</div>
+                    </div>
+                    <div id="chartOverviewLeader" class="chart-container small"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">团长类型GMV占比</div>
+                        <div class="card-description">导购型 / 内容型 / 社群型</div>
+                    </div>
+                    <div id="chartOverviewType" class="chart-container small"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Trend -->
+        <div id="tab-trend" class="tab-content">
+            <div class="card" style="margin-bottom:16px">
+                <div class="card-header">
+                    <div class="card-title">每日GMV趋势</div>
+                    <div class="card-description">展示每日付款金额变化，可切换查看佣金、进店人数等指标</div>
+                </div>
+                <div id="chartTrendGmv" class="chart-container"></div>
+            </div>
+            <!-- Trend Insights -->
+            <div class="card" style="margin-bottom:16px;border-left:4px solid #f97316">
+                <div class="card-header">
+                    <div class="card-title">📈 趋势洞察</div>
+                </div>
+                <div id="trendInsights" style="font-size:14px;line-height:1.8"></div>
+            </div>
+            <div class="chart-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">每日转化率趋势</div>
+                        <div class="card-description">访客转化率变化</div>
+                    </div>
+                    <div id="chartTrendConversion" class="chart-container small"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">每日支出费用趋势</div>
+                        <div class="card-description">付款支出费用变化</div>
+                    </div>
+                    <div id="chartTrendCost" class="chart-container small"></div>
+                </div>
+            </div>
+            <div class="card" style="margin-top:16px">
+                <div class="card-header">
+                    <div class="card-title">各类型团长每日GMV贡献（堆叠柱状图）</div>
+                    <div class="card-description">展示不同团长类型在各日的GMV贡献占比</div>
+                </div>
+                <div id="chartTrendTypeStack" class="chart-container"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Leader -->
+        <div id="tab-leader" class="tab-content">
+            <div class="card" style="margin-bottom:16px">
+                <div class="card-header">
+                    <div class="card-title">团长详细数据表</div>
+                    <div class="card-description">点击团长名称可查看详细分析</div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="leaderTable">
+                        <thead><tr>
+                            <th>排名</th><th>团长</th><th>类型</th><th>GMV（万元）</th><th>佣金（万元）</th>
+                            <th>进店人数</th><th>付款件数</th><th>支出费用（万元）</th><th>带货商品数</th><th>ROI</th>
+                        </tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Leader Insights -->
+            <div class="card" style="margin-bottom:16px;border-left:4px solid #8b5cf6">
+                <div class="card-header">
+                    <div class="card-title">🏆 团长表现洞察</div>
+                </div>
+                <div id="leaderInsights" style="font-size:14px;line-height:1.8"></div>
+            </div>
+            <div class="chart-grid">
+                <div class="card">
+                    <div class="card-header"><div class="card-title">团长ROI对比</div><div class="card-description">GMV / 支出费用</div></div>
+                    <div id="chartLeaderRoi" class="chart-container small"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><div class="card-title">团长进店人数对比</div><div class="card-description">各团长带来的进店流量</div></div>
+                    <div id="chartLeaderVisitors" class="chart-container small"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Type -->
+        <div id="tab-type" class="tab-content">
+            <div class="kpi-grid" id="typeKpiGrid"></div>
+            <!-- Type Insights -->
+            <div class="card" style="margin-bottom:16px;border-left:4px solid #22c55e">
+                <div class="card-header">
+                    <div class="card-title">🎯 团长类型洞察</div>
+                </div>
+                <div id="typeInsights" style="font-size:14px;line-height:1.8"></div>
+            </div>
+            <div class="chart-grid">
+                <div class="card">
+                    <div class="card-header"><div class="card-title">各类型GMV占比</div></div>
+                    <div id="chartTypeGmvPie" class="chart-container small"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><div class="card-title">各类型进店人数占比</div></div>
+                    <div id="chartTypeVisitorPie" class="chart-container small"></div>
+                </div>
+            </div>
+            <div class="card" style="margin-top:16px">
+                <div class="card-header"><div class="card-title">各类型团长详细对比</div></div>
+                <div class="table-wrapper">
+                    <table id="typeTable">
+                        <thead><tr><th>团长类型</th><th>GMV（万元）</th><th>占比</th><th>进店人数</th><th>付款件数</th><th>支出费用（万元）</th><th>ROI</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Item -->
+        <div id="tab-item" class="tab-content">
+            <div class="card" style="margin-bottom:16px">
+                <div class="card-header">
+                    <div class="card-title">TOP 15 商品淘客带货GMV</div>
+                    <div class="card-description">按商品+团长维度统计</div>
+                </div>
+                <div id="chartItemGmv" class="chart-container"></div>
+            </div>
+            <!-- Item Insights -->
+            <div class="card" style="margin-bottom:16px;border-left:4px solid #eab308">
+                <div class="card-header">
+                    <div class="card-title">💡 商品表现洞察</div>
+                </div>
+                <div id="itemInsights" style="font-size:14px;line-height:1.8"></div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">商品详细数据表</div></div>
+                <div class="table-wrapper">
+                    <table id="itemTable">
+                        <thead><tr><th>排名</th><th>商品子类</th><th>负责团长</th><th>GMV（万元）</th><th>进店人数</th><th>付款件数</th><th>客单价（元）</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Action -->
+        <div id="tab-action" class="tab-content">
+            <div class="card" style="margin-bottom:16px">
+                <div class="card-header">
+                    <div class="card-title">团长动作时间线</div>
+                    <div class="card-description">每日团长动作次数变化</div>
+                </div>
+                <div id="chartActionTimeline" class="chart-container"></div>
+            </div>
+            <div class="chart-grid">
+                <div class="card">
+                    <div class="card-header"><div class="card-title">各团长动作次数</div></div>
+                    <div id="chartActionLeader" class="chart-container small"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><div class="card-title">动作次数分布</div></div>
+                    <div id="chartActionDist" class="chart-container small"></div>
+                </div>
+            </div>
+            <!-- Action Summary -->
+            <div class="card" style="margin-top:16px;border-left:4px solid #8b5cf6">
+                <div class="card-header">
+                    <div class="card-title">📝 团长动作总结与类型差异</div>
+                    <div class="card-description">各团长在618期间的具体动作回顾与不同类型团长的行为模式对比</div>
+                </div>
+                <div id="actionSummary" style="font-size:14px;line-height:1.8"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Insight (NEW) -->
+        <div id="tab-insight" class="tab-content">
+            <!-- Section 1: Action Impact -->
+            <div class="section-title">📌 一、团长动作对销售的影响分析</div>
+            <div class="kpi-grid" id="insightActionKpi"></div>
+            <div class="chart-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">各类型团长动作后GMV变化率</div>
+                        <div class="card-description">动作前3天 vs 动作后3天平均GMV变化</div>
+                    </div>
+                    <div id="chartActionImpactType" class="chart-container small"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">动作-次日GMV相关性</div>
+                        <div class="card-description">每日动作次数与次日GMV的相关系数</div>
+                    </div>
+                    <div id="chartActionCorrelation" class="chart-container small"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">动作效果明细表（TOP 20）</div>
+                    <div class="card-description">按GMV变化幅度排序，展示每次动作前后的流量与销售对比</div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="actionImpactTable" class="action-impact-table">
+                        <thead><tr><th>日期</th><th>团长</th><th>类型</th><th>动作描述</th><th>动作前GMV</th><th>动作后GMV</th><th>GMV变化</th><th>进店变化</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 2: Leader-Type Impact on Items -->
+            <div class="section-title" style="margin-top:32px">📌 二、各类型团长对商品的积极影响</div>
+            <div class="chart-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">团长类型 × 商品 GMV热力矩阵</div>
+                        <div class="card-description">不同团长类型对各商品的GMV贡献</div>
+                    </div>
+                    <div id="chartTypeItemHeatmap" class="chart-container large"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">团长类型 × 商品 转化率矩阵</div>
+                        <div class="card-description">不同团长类型对各商品的转化率表现</div>
+                    </div>
+                    <div id="chartTypeItemConversion" class="chart-container large"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">重点商品团长贡献拆解</div>
+                    <div class="card-description">各商品在不同团长类型下的GMV占比与转化表现</div>
+                </div>
+                <div id="chartItemBreakdown" class="chart-container"></div>
+            </div>
+
+            <!-- Section 3: HIGHLIGHT & LOWLIGHT -->
+            <div class="section-title" style="margin-top:32px">📌 三、HIGHLIGHT & LOWLIGHT</div>
+            <div class="insight-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color:#22c55e">✅ HIGHLIGHT（亮点）</div>
+                        <div class="card-description">表现优异的渠道、商品和策略</div>
+                    </div>
+                    <div id="highlightsList"></div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color:#ef4444">⚠️ LOWLIGHT（不足）</div>
+                        <div class="card-description">需要优化和改进的环节</div>
+                    </div>
+                    <div id="lowlightsList"></div>
+                </div>
+            </div>
+
+            <!-- Section 4: Differentiated Strategy -->
+            <div class="section-title" style="margin-top:32px">📌 四、差异化推广策略建议</div>
+            <div class="card" style="margin-bottom:16px">
+                <div class="card-header">
+                    <div class="card-title">各商品最佳团长类型匹配</div>
+                    <div class="card-description">基于618实际数据，为每个商品推荐最优的团长类型组合</div>
+                </div>
+                <div id="chartStrategyMatrix" class="chart-container"></div>
+            </div>
+            <div class="strategy-matrix" id="strategyCards"></div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">策略总结</div>
+                </div>
+                <div id="strategySummary" style="font-size:14px;line-height:1.8"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" id="modalContent">
+            <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('show')">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+    const DATA = {"summary": {"totalGmv": 30623768.53, "totalCommission": 632955.77, "totalCost": 1075061.31, "roi": 28.49, "totalVisitors": 438012, "totalOrders": 10726, "avgConversion": 0.0275, "commissionRate": 0.0207, "leaderCount": 8, "itemCount": 25, "actionCount": 242}, "daily": [{"date": "2026-05-13", "gmv": 471979.35, "commission": 8113.83, "cost": 14528.43, "visitors": 11593, "orders": 219, "conversion": 0.0212}, {"date": "2026-05-14", "gmv": 389049.55, "commission": 7129.99, "cost": 12864.64, "visitors": 10094, "orders": 178, "conversion": 0.017}, {"date": "2026-05-15", "gmv": 583535.44, "commission": 11061.54, "cost": 19831.46, "visitors": 12580, "orders": 265, "conversion": 0.0357}, {"date": "2026-05-16", "gmv": 475390.62, "commission": 9094.69, "cost": 15379.41, "visitors": 11650, "orders": 184, "conversion": 0.0292}, {"date": "2026-05-17", "gmv": 361366.68, "commission": 6080.91, "cost": 11565.71, "visitors": 8920, "orders": 140, "conversion": 0.0351}, {"date": "2026-05-18", "gmv": 809674.77, "commission": 15235.97, "cost": 29141.11, "visitors": 9652, "orders": 275, "conversion": 0.0226}, {"date": "2026-05-19", "gmv": 1185965.64, "commission": 22041.72, "cost": 41552.01, "visitors": 10544, "orders": 345, "conversion": 0.0347}, {"date": "2026-05-20", "gmv": 1658781.96, "commission": 31095.76, "cost": 58734.39, "visitors": 14195, "orders": 484, "conversion": 0.0259}, {"date": "2026-05-21", "gmv": 1416124.4, "commission": 26154.26, "cost": 49436.56, "visitors": 14005, "orders": 454, "conversion": 0.0199}, {"date": "2026-05-22", "gmv": 1041345.26, "commission": 17348.76, "cost": 33885.26, "visitors": 15865, "orders": 372, "conversion": 0.0151}, {"date": "2026-05-23", "gmv": 767503.17, "commission": 12805.81, "cost": 25269.55, "visitors": 16554, "orders": 284, "conversion": 0.0177}, {"date": "2026-05-24", "gmv": 145944.18, "commission": 1104.69, "cost": 2167.45, "visitors": 8943, "orders": 57, "conversion": 0.0153}, {"date": "2026-05-25", "gmv": 542938.34, "commission": 10380.79, "cost": 18500.82, "visitors": 16290, "orders": 201, "conversion": 0.0137}, {"date": "2026-05-26", "gmv": 832551.72, "commission": 16061.78, "cost": 29660.33, "visitors": 16269, "orders": 303, "conversion": 0.0186}, {"date": "2026-05-27", "gmv": 665538.63, "commission": 12144.82, "cost": 22753.26, "visitors": 16160, "orders": 251, "conversion": 0.0196}, {"date": "2026-05-28", "gmv": 728472.15, "commission": 13542.54, "cost": 24897.16, "visitors": 12980, "orders": 251, "conversion": 0.0231}, {"date": "2026-05-29", "gmv": 771974.18, "commission": 15543.57, "cost": 28229.25, "visitors": 0, "orders": 257, "conversion": 0.0}, {"date": "2026-05-30", "gmv": 1949391.77, "commission": 38342.53, "cost": 71211.79, "visitors": 14967, "orders": 599, "conversion": 0.0306}, {"date": "2026-05-31", "gmv": 2328000.56, "commission": 45290.12, "cost": 84678.89, "visitors": 11037, "orders": 727, "conversion": 0.0487}, {"date": "2026-06-01", "gmv": 1730267.1, "commission": 33436.37, "cost": 62318.56, "visitors": 11226, "orders": 572, "conversion": 0.042}, {"date": "2026-06-02", "gmv": 830074.97, "commission": 16091.93, "cost": 29774.44, "visitors": 11702, "orders": 298, "conversion": 0.0342}, {"date": "2026-06-03", "gmv": 611128.44, "commission": 11407.98, "cost": 21237.55, "visitors": 10655, "orders": 248, "conversion": 0.0354}, {"date": "2026-06-04", "gmv": 575498.45, "commission": 10576.27, "cost": 19956.34, "visitors": 10487, "orders": 227, "conversion": 0.0378}, {"date": "2026-06-05", "gmv": 747559.5, "commission": 17813.26, "cost": 26774.42, "visitors": 9583, "orders": 294, "conversion": 0.037}, {"date": "2026-06-06", "gmv": 1246825.92, "commission": 34943.54, "cost": 47157.29, "visitors": 11873, "orders": 482, "conversion": 0.0377}, {"date": "2026-06-07", "gmv": 853542.47, "commission": 23343.63, "cost": 30892.2, "visitors": 10156, "orders": 355, "conversion": 0.0459}, {"date": "2026-06-08", "gmv": 1022637.83, "commission": 28121.68, "cost": 38064.16, "visitors": 10684, "orders": 381, "conversion": 0.0509}, {"date": "2026-06-09", "gmv": 676686.86, "commission": 18508.84, "cost": 24113.44, "visitors": 15571, "orders": 262, "conversion": 0.0314}, {"date": "2026-06-10", "gmv": 1594786.5, "commission": 34023.31, "cost": 51897.23, "visitors": 42484, "orders": 491, "conversion": 0.0241}, {"date": "2026-06-11", "gmv": 1253721.89, "commission": 28168.61, "cost": 46130.29, "visitors": 19633, "orders": 415, "conversion": 0.0325}, {"date": "2026-06-13", "gmv": 613361.7, "commission": 12851.09, "cost": 20456.11, "visitors": 14476, "orders": 213, "conversion": 0.0376}, {"date": "2026-06-14", "gmv": 473927.29, "commission": 12012.67, "cost": 16737.43, "visitors": 12784, "orders": 163, "conversion": 0.0232}, {"date": "2026-06-15", "gmv": 1268221.24, "commission": 33082.51, "cost": 45264.37, "visitors": 14400, "orders": 479, "conversion": 0.0363}], "dailyType": [{"date": "2026-05-13", "内容型": 166539.77, "导购型": 57862.35, "社群型": 247577.23}, {"date": "2026-05-14", "内容型": 151901.04, "导购型": 31740.27, "社群型": 205408.24}, {"date": "2026-05-15", "内容型": 202890.79, "导购型": 106696.54, "社群型": 273948.11}, {"date": "2026-05-16", "内容型": 147953.12, "导购型": 159560.52, "社群型": 167876.98}, {"date": "2026-05-17", "内容型": 142038.21, "导购型": 103824.26, "社群型": 115504.21}, {"date": "2026-05-18", "内容型": 145498.64, "导购型": 424615.52, "社群型": 239560.61}, {"date": "2026-05-19", "内容型": 244068.73, "导购型": 739904.31, "社群型": 201992.6}, {"date": "2026-05-20", "内容型": 271366.43, "导购型": 1109275.87, "社群型": 278139.66}, {"date": "2026-05-21", "内容型": 312137.81, "导购型": 883637.75, "社群型": 220348.84}, {"date": "2026-05-22", "内容型": 254425.06, "导购型": 474241.84, "社群型": 312678.36}, {"date": "2026-05-23", "内容型": 201338.92, "导购型": 362849.14, "社群型": 203315.11}, {"date": "2026-05-24", "内容型": 52957.33, "导购型": 45542.32, "社群型": 47444.53}, {"date": "2026-05-25", "内容型": 119339.63, "导购型": 284664.15, "社群型": 138934.56}, {"date": "2026-05-26", "内容型": 149960.28, "导购型": 437165.34, "社群型": 245426.1}, {"date": "2026-05-27", "内容型": 156632.45, "导购型": 346869.21, "社群型": 162036.97}, {"date": "2026-05-28", "内容型": 113988.18, "导购型": 494205.6, "社群型": 120278.37}, {"date": "2026-05-29", "内容型": 105364.7, "导购型": 570558.04, "社群型": 96051.44}, {"date": "2026-05-30", "内容型": 332406.02, "导购型": 1464979.31, "社群型": 152006.44}, {"date": "2026-05-31", "内容型": 232984.59, "导购型": 1888694.7, "社群型": 206321.27}, {"date": "2026-06-01", "内容型": 301805.67, "导购型": 1222723.72, "社群型": 205737.71}, {"date": "2026-06-02", "内容型": 208270.79, "导购型": 476422.3, "社群型": 145381.88}, {"date": "2026-06-03", "内容型": 219568.42, "导购型": 225105.31, "社群型": 166454.71}, {"date": "2026-06-04", "内容型": 178791.62, "导购型": 263278.68, "社群型": 133428.15}, {"date": "2026-06-05", "内容型": 293271.27, "导购型": 341109.25, "社群型": 113178.98}, {"date": "2026-06-06", "内容型": 461377.94, "导购型": 673747.8, "社群型": 111700.18}, {"date": "2026-06-07", "内容型": 359380.45, "导购型": 354538.24, "社群型": 139623.78}, {"date": "2026-06-08", "内容型": 308696.25, "导购型": 567287.2, "社群型": 146654.38}, {"date": "2026-06-09", "内容型": 216126.23, "导购型": 310728.28, "社群型": 149832.35}, {"date": "2026-06-10", "内容型": 186985.18, "导购型": 1240969.87, "社群型": 166831.45}, {"date": "2026-06-11", "内容型": 150176.9, "导购型": 900375.02, "社群型": 203169.97}, {"date": "2026-06-13", "内容型": 106909.71, "导购型": 367812.02, "社群型": 138639.97}, {"date": "2026-06-14", "内容型": 79314.07, "导购型": 270396.23, "社群型": 124216.99}, {"date": "2026-06-15", "内容型": 322236.23, "导购型": 635703.82, "社群型": 310281.19}], "leaders": [{"name": "值得买", "gmv": 17837084.78, "commission": 379647.31, "cost": 652635.26, "visitors": 186940, "orders": 4595, "items": 3, "roi": 27.33}, {"name": "哥登", "gmv": 3549232.64, "commission": 81912.54, "cost": 118338.15, "visitors": 49866, "orders": 1431, "items": 4, "roi": 29.99}, {"name": "多淘", "gmv": 3395948.2, "commission": 59956.26, "cost": 110038.58, "visitors": 72324, "orders": 2438, "items": 3, "roi": 30.86}, {"name": "荣牛哥", "gmv": 3347469.79, "commission": 62029.13, "cost": 109601.94, "visitors": 77142, "orders": 1235, "items": 5, "roi": 30.54}, {"name": "集物美", "gmv": 2184815.3, "commission": 43230.71, "cost": 74387.16, "visitors": 38186, "orders": 884, "items": 7, "roi": 29.37}, {"name": "美豆科技", "gmv": 219746.1, "commission": 4588.16, "cost": 7161.82, "visitors": 12467, "orders": 109, "items": 3, "roi": 30.68}, {"name": "合盈", "gmv": 89471.72, "commission": 1591.66, "cost": 2898.4, "visitors": 899, "orders": 34, "items": 3, "roi": 30.87}, {"name": "其他团长", "gmv": 0.0, "commission": 0.0, "cost": 0.0, "visitors": 188, "orders": 0, "items": 11, "roi": 0}], "types": [{"name": "内容型", "gmv": 6896702.43, "visitors": 127008, "orders": 2666, "cost": 227940.09, "pct": 0.2252}, {"name": "导购型", "gmv": 17837084.78, "visitors": 186940, "orders": 4595, "cost": 652635.26, "pct": 0.5825}, {"name": "社群型", "gmv": 5889981.32, "visitors": 124064, "orders": 3465, "cost": 194485.96, "pct": 0.1923}], "items": [{"sub": "Y700 五代", "leader": "值得买", "gmv": 11694148.89, "visitors": 91063, "orders": 2980}, {"sub": "Y900 13", "leader": "值得买", "gmv": 5067176.07, "visitors": 66345, "orders": 1290}, {"sub": "平板Pro GT", "leader": "哥登", "gmv": 2044794.35, "visitors": 22564, "orders": 1008}, {"sub": "Y700 五代 包销", "leader": "荣牛哥", "gmv": 1965848.44, "visitors": 22987, "orders": 314}, {"sub": "Pad Pro 12.7", "leader": "多淘", "gmv": 1883144.18, "visitors": 28793, "orders": 1049}, {"sub": "Y700 四代", "leader": "集物美", "gmv": 1464295.53, "visitors": 12767, "orders": 470}, {"sub": "Y900 11", "leader": "值得买", "gmv": 1075759.82, "visitors": 29532, "orders": 325}, {"sub": "平板12.1", "leader": "多淘", "gmv": 906641.98, "visitors": 19752, "orders": 772}, {"sub": "Pro13", "leader": "荣牛哥", "gmv": 768705.88, "visitors": 11822, "orders": 379}, {"sub": "Y700 四代", "leader": "哥登", "gmv": 764221.37, "visitors": 23581, "orders": 238}, {"sub": "Y700 五代", "leader": "哥登", "gmv": 674427.92, "visitors": 2861, "orders": 174}, {"sub": "平板 11", "leader": "多淘", "gmv": 606162.04, "visitors": 23779, "orders": 617}, {"sub": "平板12.1", "leader": "荣牛哥", "gmv": 486686.11, "visitors": 30214, "orders": 415}, {"sub": "平板 11", "leader": "集物美", "gmv": 191314.79, "visitors": 11028, "orders": 198}, {"sub": "Y700 五代 包销", "leader": "集物美", "gmv": 187589.07, "visitors": 9943, "orders": 44}, {"sub": "Pad Pro 12.7", "leader": "集物美", "gmv": 161922.29, "visitors": 2646, "orders": 87}, {"sub": "平板 11", "leader": "荣牛哥", "gmv": 126229.36, "visitors": 12108, "orders": 127}, {"sub": "平板Pro GT", "leader": "美豆科技", "gmv": 115424.81, "visitors": 5942, "orders": 59}, {"sub": "Pro13", "leader": "美豆科技", "gmv": 104321.29, "visitors": 6512, "orders": 50}, {"sub": "Pro13", "leader": "集物美", "gmv": 98204.22, "visitors": 1010, "orders": 47}, {"sub": "平板Pro GT", "leader": "集物美", "gmv": 71502.45, "visitors": 556, "orders": 31}, {"sub": "Yoga Pad Pro 14.5", "leader": "哥登", "gmv": 65789.0, "visitors": 860, "orders": 11}, {"sub": "Y700 五代", "leader": "合盈", "gmv": 59717.0, "visitors": 490, "orders": 18}, {"sub": "Pad Pro 12.7", "leader": "合盈", "gmv": 29754.72, "visitors": 408, "orders": 16}, {"sub": "平板12.1", "leader": "集物美", "gmv": 9986.95, "visitors": 236, "orders": 7}], "actions": [{"name": "荣牛哥联盟 ", "count": 75}, {"name": "多淘团队", "count": 65}, {"name": "集物美", "count": 44}, {"name": "值得买", "count": 15}, {"name": "荣牛哥联盟", "count": 15}, {"name": "合盈招商联盟", "count": 14}, {"name": "哥登", "count": 7}, {"name": "美豆科技联盟", "count": 5}, {"name": "值得买星罗", "count": 1}, {"name": "社群扩散  ", "count": 1}], "actionDaily": [{"date": "2026-05-13", "count": 18}, {"date": "2026-05-14", "count": 2}, {"date": "2026-05-15", "count": 4}, {"date": "2026-05-16", "count": 13}, {"date": "2026-05-17", "count": 2}, {"date": "2026-05-18", "count": 7}, {"date": "2026-05-19", "count": 14}, {"date": "2026-05-20", "count": 6}, {"date": "2026-05-21", "count": 3}, {"date": "2026-05-22", "count": 5}, {"date": "2026-05-23", "count": 4}, {"date": "2026-05-24", "count": 4}, {"date": "2026-05-25", "count": 7}, {"date": "2026-05-26", "count": 10}, {"date": "2026-05-27", "count": 3}, {"date": "2026-05-28", "count": 8}, {"date": "2026-05-29", "count": 4}, {"date": "2026-05-30", "count": 2}, {"date": "2026-05-31", "count": 8}, {"date": "2026-06-01", "count": 7}, {"date": "2026-06-02", "count": 4}, {"date": "2026-06-03", "count": 5}, {"date": "2026-06-04", "count": 4}, {"date": "2026-06-05", "count": 20}, {"date": "2026-06-06", "count": 3}, {"date": "2026-06-07", "count": 2}, {"date": "2026-06-08", "count": 10}, {"date": "2026-06-09", "count": 8}, {"date": "2026-06-10", "count": 7}, {"date": "2026-06-11", "count": 6}, {"date": "2026-06-12", "count": 7}, {"date": "2026-06-13", "count": 6}, {"date": "2026-06-14", "count": 2}, {"date": "2026-06-15", "count": 8}, {"date": "2026-06-16", "count": 9}, {"date": "2026-06-17", "count": 9}, {"date": "2026-06-18", "count": 1}], "analysis": {"actionImpact": [{"date": "2026-06-10", "leader": "值得买", "leader_type": "导购型", "description": "值得买app-值友专项banner-佣金补贴给用户", "before_gmv": 1232553.72, "after_gmv": 2141344.89, "gmv_change_pct": 0.7373, "before_visitors": 17991.0, "after_visitors": 38315.0, "visitors_change_pct": 1.1297, "before_orders": 326.0, "after_orders": 571.0, "orders_change_pct": 0.7515}, {"date": "2026-06-05", "leader": "值得买", "leader_type": "导购型", "description": "值得买app首页入口-值友专享banner-佣金补贴给用户", "before_gmv": 964806.29, "after_gmv": 1369395.29, "gmv_change_pct": 0.4193, "before_visitors": 11161.0, "after_visitors": 12981.0, "visitors_change_pct": 0.1631, "before_orders": 252.0, "after_orders": 369.0, "orders_change_pct": 0.4643}, {"date": "2026-05-29", "leader": "值得买", "leader_type": "导购型", "description": "佣金补贴给用户，值得买app内“手慢无”top级标签", "before_gmv": 1278240.15, "after_gmv": 3924232.05, "gmv_change_pct": 2.07, "before_visitors": 19851.0, "after_visitors": 9612.0, "visitors_change_pct": -0.5158, "before_orders": 315.0, "after_orders": 1028.0, "orders_change_pct": 2.2635}, {"date": "2026-06-15", "leader": "值得买", "leader_type": "导购型", "description": "值得买首焦爆料", "before_gmv": 638208.25, "after_gmv": 635703.82, "gmv_change_pct": -0.0039, "before_visitors": 11530.0, "after_visitors": 5319.0, "visitors_change_pct": -0.5387, "before_orders": 171.0, "after_orders": 170.0, "orders_change_pct": -0.0058}, {"date": "2026-06-15", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料", "before_gmv": 106820.11, "after_gmv": 81734.52, "gmv_change_pct": -0.2348, "before_visitors": 3774.0, "after_visitors": 2326.0, "visitors_change_pct": -0.3837, "before_orders": 38.0, "after_orders": 34.0, "orders_change_pct": -0.1053}, {"date": "2026-06-15", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料", "before_gmv": 106820.11, "after_gmv": 81734.52, "gmv_change_pct": -0.2348, "before_visitors": 3774.0, "after_visitors": 2326.0, "visitors_change_pct": -0.3837, "before_orders": 38.0, "after_orders": 34.0, "orders_change_pct": -0.1053}, {"date": "2026-06-15", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料", "before_gmv": 106820.11, "after_gmv": 81734.52, "gmv_change_pct": -0.2348, "before_visitors": 3774.0, "after_visitors": 2326.0, "visitors_change_pct": -0.3837, "before_orders": 38.0, "after_orders": 34.0, "orders_change_pct": -0.1053}, {"date": "2026-06-14", "leader": "哥登", "leader_type": "内容型", "description": "6.5-6.14超级淘客数据汇报：\n值得买共计发布8篇爆料    曝光量 30w+\n小红书素人种草发布20篇  曝光量40w+\n自营社群扩散1500+    触达人群9.4w+\n放单宝分成30%    全域投放触达人群10w+\n返利网app投放40+    触达人群15w+\n导购平台20+    触达人群8w+\n\n共计产出单量781单，总GMV：299.6w", "before_gmv": 167607.57, "after_gmv": 235348.36, "gmv_change_pct": 0.4042, "before_visitors": 4518.0, "after_visitors": 3392.0, "visitors_change_pct": -0.2492, "before_orders": 61.0, "after_orders": 98.0, "orders_change_pct": 0.6066}, {"date": "2026-06-09", "leader": "集物美", "leader_type": "社群型", "description": "社群宣发", "before_gmv": 89411.22, "after_gmv": 177045.01, "gmv_change_pct": 0.9801, "before_visitors": 1529.0, "after_visitors": 7779.0, "visitors_change_pct": 4.0876, "before_orders": 46.0, "after_orders": 64.0, "orders_change_pct": 0.3913}, {"date": "2026-06-09", "leader": "集物美", "leader_type": "社群型", "description": "社群宣发", "before_gmv": 89411.22, "after_gmv": 177045.01, "gmv_change_pct": 0.9801, "before_visitors": 1529.0, "after_visitors": 7779.0, "visitors_change_pct": 4.0876, "before_orders": 46.0, "after_orders": 64.0, "orders_change_pct": 0.3913}, {"date": "2026-06-09", "leader": "集物美", "leader_type": "社群型", "description": "社群线报", "before_gmv": 89411.22, "after_gmv": 177045.01, "gmv_change_pct": 0.9801, "before_visitors": 1529.0, "after_visitors": 7779.0, "visitors_change_pct": 4.0876, "before_orders": 46.0, "after_orders": 64.0, "orders_change_pct": 0.3913}, {"date": "2026-06-09", "leader": "集物美", "leader_type": "社群型", "description": "私域对接", "before_gmv": 89411.22, "after_gmv": 177045.01, "gmv_change_pct": 0.9801, "before_visitors": 1529.0, "after_visitors": 7779.0, "visitors_change_pct": 4.0876, "before_orders": 46.0, "after_orders": 64.0, "orders_change_pct": 0.3913}, {"date": "2026-06-08", "leader": "集物美", "leader_type": "社群型", "description": "爆料推广", "before_gmv": 80194.79, "after_gmv": 139783.46, "gmv_change_pct": 0.743, "before_visitors": 1539.0, "after_visitors": 4273.0, "visitors_change_pct": 1.7765, "before_orders": 38.0, "after_orders": 53.0, "orders_change_pct": 0.3947}, {"date": "2026-06-06", "leader": "集物美", "leader_type": "社群型", "description": "app首页投广", "before_gmv": 63577.77, "after_gmv": 89411.22, "gmv_change_pct": 0.4063, "before_visitors": 1459.0, "after_visitors": 1529.0, "visitors_change_pct": 0.048, "before_orders": 31.0, "after_orders": 46.0, "orders_change_pct": 0.4839}, {"date": "2026-06-05", "leader": "集物美", "leader_type": "社群型", "description": "线报中心投放", "before_gmv": 66736.05, "after_gmv": 80194.79, "gmv_change_pct": 0.2017, "before_visitors": 1706.0, "after_visitors": 1539.0, "visitors_change_pct": -0.0979, "before_orders": 33.0, "after_orders": 38.0, "orders_change_pct": 0.1515}, {"date": "2026-06-05", "leader": "集物美", "leader_type": "社群型", "description": "数码私域宣发", "before_gmv": 66736.05, "after_gmv": 80194.79, "gmv_change_pct": 0.2017, "before_visitors": 1706.0, "after_visitors": 1539.0, "visitors_change_pct": -0.0979, "before_orders": 33.0, "after_orders": 38.0, "orders_change_pct": 0.1515}, {"date": "2026-06-05", "leader": "集物美", "leader_type": "社群型", "description": "社群投放", "before_gmv": 66736.05, "after_gmv": 80194.79, "gmv_change_pct": 0.2017, "before_visitors": 1706.0, "after_visitors": 1539.0, "visitors_change_pct": -0.0979, "before_orders": 33.0, "after_orders": 38.0, "orders_change_pct": 0.1515}, {"date": "2026-06-08", "leader": "集物美", "leader_type": "社群型", "description": "微博达人引流35.7w", "before_gmv": 80194.79, "after_gmv": 139783.46, "gmv_change_pct": 0.743, "before_visitors": 1539.0, "after_visitors": 4273.0, "visitors_change_pct": 1.7765, "before_orders": 38.0, "after_orders": 53.0, "orders_change_pct": 0.3947}, {"date": "2026-06-08", "leader": "集物美", "leader_type": "社群型", "description": "爆料推广", "before_gmv": 80194.79, "after_gmv": 139783.46, "gmv_change_pct": 0.743, "before_visitors": 1539.0, "after_visitors": 4273.0, "visitors_change_pct": 1.7765, "before_orders": 38.0, "after_orders": 53.0, "orders_change_pct": 0.3947}, {"date": "2026-06-08", "leader": "集物美", "leader_type": "社群型", "description": "爆料推广", "before_gmv": 80194.79, "after_gmv": 139783.46, "gmv_change_pct": 0.743, "before_visitors": 1539.0, "after_visitors": 4273.0, "visitors_change_pct": 1.7765, "before_orders": 38.0, "after_orders": 53.0, "orders_change_pct": 0.3947}, {"date": "2026-06-09", "leader": "集物美", "leader_type": "社群型", "description": "爆料推广", "before_gmv": 89411.22, "after_gmv": 177045.01, "gmv_change_pct": 0.9801, "before_visitors": 1529.0, "after_visitors": 7779.0, "visitors_change_pct": 4.0876, "before_orders": 46.0, "after_orders": 64.0, "orders_change_pct": 0.3913}, {"date": "2026-06-08", "leader": "集物美", "leader_type": "社群型", "description": "爆料推广", "before_gmv": 80194.79, "after_gmv": 139783.46, "gmv_change_pct": 0.743, "before_visitors": 1539.0, "after_visitors": 4273.0, "visitors_change_pct": 1.7765, "before_orders": 38.0, "after_orders": 53.0, "orders_change_pct": 0.3947}, {"date": "2026-06-07", "leader": "哥登", "leader_type": "内容型", "description": "6.3-6.7资源安排：\n值得买爆料4篇  曝光量40w+\n社群扩散1000+  触达量6.9w+\n导购平台植入30+  触达人群10w+\n返利APP投放10+   触达人群8w+\n小红书投放流量加持10w+\n总结：产出单量567单，产出总GMV：159.7万", "before_gmv": 625632.16, "after_gmv": 697475.82, "gmv_change_pct": 0.1148, "before_visitors": 4747.0, "after_visitors": 6673.0, "visitors_change_pct": 0.4057, "before_orders": 294.0, "after_orders": 308.0, "orders_change_pct": 0.0476}, {"date": "2026-06-05", "leader": "值得买", "leader_type": "导购型", "description": "值得买爆料详情，官方行业账号发布，补贴一定金额促单", "before_gmv": 964806.29, "after_gmv": 1369395.29, "gmv_change_pct": 0.4193, "before_visitors": 11161.0, "after_visitors": 12981.0, "visitors_change_pct": 0.1631, "before_orders": 252.0, "after_orders": 369.0, "orders_change_pct": 0.4643}, {"date": "2026-06-05", "leader": "值得买", "leader_type": "导购型", "description": "值得买爆料详情，官方行业账号发布，补贴一定金额促单", "before_gmv": 964806.29, "after_gmv": 1369395.29, "gmv_change_pct": 0.4193, "before_visitors": 11161.0, "after_visitors": 12981.0, "visitors_change_pct": 0.1631, "before_orders": 252.0, "after_orders": 369.0, "orders_change_pct": 0.4643}, {"date": "2026-06-05", "leader": "值得买", "leader_type": "导购型", "description": "y700 五代 首焦位 dau300w+", "before_gmv": 964806.29, "after_gmv": 1369395.29, "gmv_change_pct": 0.4193, "before_visitors": 11161.0, "after_visitors": 12981.0, "visitors_change_pct": 0.1631, "before_orders": 252.0, "after_orders": 369.0, "orders_change_pct": 0.4643}, {"date": "2026-06-05", "leader": "值得买", "leader_type": "导购型", "description": "Y900 13 首焦位 dau300w+", "before_gmv": 964806.29, "after_gmv": 1369395.29, "gmv_change_pct": 0.4193, "before_visitors": 11161.0, "after_visitors": 12981.0, "visitors_change_pct": 0.1631, "before_orders": 252.0, "after_orders": 369.0, "orders_change_pct": 0.4643}, {"date": "2026-05-31", "leader": "集物美", "leader_type": "社群型", "description": "采集素材分投", "before_gmv": 129050.58, "after_gmv": 133686.35, "gmv_change_pct": 0.0359, "before_visitors": 1797.0, "after_visitors": 2202.0, "visitors_change_pct": 0.2254, "before_orders": 57.0, "after_orders": 52.0, "orders_change_pct": -0.0877}, {"date": "2026-05-31", "leader": "集物美", "leader_type": "社群型", "description": "采集素材分投", "before_gmv": 129050.58, "after_gmv": 133686.35, "gmv_change_pct": 0.0359, "before_visitors": 1797.0, "after_visitors": 2202.0, "visitors_change_pct": 0.2254, "before_orders": 57.0, "after_orders": 52.0, "orders_change_pct": -0.0877}, {"date": "2026-05-31", "leader": "集物美", "leader_type": "社群型", "description": "采集素材分投", "before_gmv": 129050.58, "after_gmv": 133686.35, "gmv_change_pct": 0.0359, "before_visitors": 1797.0, "after_visitors": 2202.0, "visitors_change_pct": 0.2254, "before_orders": 57.0, "after_orders": 52.0, "orders_change_pct": -0.0877}, {"date": "2026-05-31", "leader": "集物美", "leader_type": "社群型", "description": "采集素材分投", "before_gmv": 129050.58, "after_gmv": 133686.35, "gmv_change_pct": 0.0359, "before_visitors": 1797.0, "after_visitors": 2202.0, "visitors_change_pct": 0.2254, "before_orders": 57.0, "after_orders": 52.0, "orders_change_pct": -0.0877}, {"date": "2026-05-31", "leader": "集物美", "leader_type": "社群型", "description": "采集素材分投", "before_gmv": 129050.58, "after_gmv": 133686.35, "gmv_change_pct": 0.0359, "before_visitors": 1797.0, "after_visitors": 2202.0, "visitors_change_pct": 0.2254, "before_orders": 57.0, "after_orders": 52.0, "orders_change_pct": -0.0877}, {"date": "2026-05-31", "leader": "集物美", "leader_type": "社群型", "description": "采集素材分投", "before_gmv": 129050.58, "after_gmv": 133686.35, "gmv_change_pct": 0.0359, "before_visitors": 1797.0, "after_visitors": 2202.0, "visitors_change_pct": 0.2254, "before_orders": 57.0, "after_orders": 52.0, "orders_change_pct": -0.0877}, {"date": "2026-05-31", "leader": "集物美", "leader_type": "社群型", "description": "采集素材分投", "before_gmv": 129050.58, "after_gmv": 133686.35, "gmv_change_pct": 0.0359, "before_visitors": 1797.0, "after_visitors": 2202.0, "visitors_change_pct": 0.2254, "before_orders": 57.0, "after_orders": 52.0, "orders_change_pct": -0.0877}, {"date": "2026-06-02", "leader": "哥登", "leader_type": "内容型", "description": "本期超级淘客6.1-6.2资源如下：\n私域社群500+   触达人群6w+\n小红书素人投放20篇    曝光率20w+\n导购平台40+    触达人群4w+\n返利平台上线20+   触达人群3.7w+\n6.1--6.2周期共计产出264单，GMV：56.6万\n数据仅截止到6.2日下午14:30", "before_gmv": 435595.67, "after_gmv": 261195.07, "gmv_change_pct": -0.4004, "before_visitors": 4464.0, "after_visitors": 4121.0, "visitors_change_pct": -0.0768, "before_orders": 169.0, "after_orders": 102.0, "orders_change_pct": -0.3964}, {"date": "2026-06-01", "leader": "值得买", "leader_type": "导购型", "description": "某头部线报，规模1000+淘客群主", "before_gmv": 3924232.05, "after_gmv": 1924251.33, "gmv_change_pct": -0.5096, "before_visitors": 9612.0, "after_visitors": 11599.0, "visitors_change_pct": 0.2067, "before_orders": 1028.0, "after_orders": 504.0, "orders_change_pct": -0.5097}, {"date": "2026-05-31", "leader": "值得买", "leader_type": "导购型", "description": "极客湾达人私域，规模3 000+用户", "before_gmv": 2529742.95, "after_gmv": 3587840.72, "gmv_change_pct": 0.4183, "before_visitors": 8648.0, "after_visitors": 12609.0, "visitors_change_pct": 0.458, "before_orders": 651.0, "after_orders": 947.0, "orders_change_pct": 0.4547}, {"date": "2026-06-01", "leader": "值得买", "leader_type": "导购型", "description": "导购媒体app banner专场", "before_gmv": 3924232.05, "after_gmv": 1924251.33, "gmv_change_pct": -0.5096, "before_visitors": 9612.0, "after_visitors": 11599.0, "visitors_change_pct": 0.2067, "before_orders": 1028.0, "after_orders": 504.0, "orders_change_pct": -0.5097}, {"date": "2026-05-28", "leader": "哥登", "leader_type": "内容型", "description": "超级淘客扩散资源如下：\n导购平台10+  2w+\n网页广告轮播100+   涉及人群5w+\n放单宝比例50%涉及人群2w+\n素材圈比例30%涉及人群1.5w+\n当日截止17:30分  共计产出：89单    GMV：104562.03", "before_gmv": 161852.25, "after_gmv": 242229.36, "gmv_change_pct": 0.4966, "before_visitors": 3339.0, "after_visitors": 2501.0, "visitors_change_pct": -0.251, "before_orders": 63.0, "after_orders": 93.0, "orders_change_pct": 0.4762}, {"date": "2026-05-28", "leader": "值得买", "leader_type": "导购型", "description": "来酷新品banner位置专场", "before_gmv": 1068698.7, "after_gmv": 2529742.95, "gmv_change_pct": 1.3671, "before_visitors": 23891.0, "after_visitors": 8648.0, "visitors_change_pct": -0.638, "before_orders": 264.0, "after_orders": 651.0, "orders_change_pct": 1.4659}, {"date": "2026-05-28", "leader": "值得买", "leader_type": "导购型", "description": "导购媒体app，dau 200w+", "before_gmv": 1068698.7, "after_gmv": 2529742.95, "gmv_change_pct": 1.3671, "before_visitors": 23891.0, "after_visitors": 8648.0, "visitors_change_pct": -0.638, "before_orders": 264.0, "after_orders": 651.0, "orders_change_pct": 1.4659}, {"date": "2026-05-26", "leader": "集物美", "leader_type": "社群型", "description": "慢慢买爆料展现", "before_gmv": 136469.72, "after_gmv": 236195.35, "gmv_change_pct": 0.7308, "before_visitors": 1808.0, "after_visitors": 2603.0, "visitors_change_pct": 0.4397, "before_orders": 52.0, "after_orders": 96.0, "orders_change_pct": 0.8462}, {"date": "2026-05-26", "leader": "集物美", "leader_type": "社群型", "description": "慢慢买平台爆料展现", "before_gmv": 136469.72, "after_gmv": 236195.35, "gmv_change_pct": 0.7308, "before_visitors": 1808.0, "after_visitors": 2603.0, "visitors_change_pct": 0.4397, "before_orders": 52.0, "after_orders": 96.0, "orders_change_pct": 0.8462}, {"date": "2026-05-26", "leader": "集物美", "leader_type": "社群型", "description": "社群线报对接投放", "before_gmv": 136469.72, "after_gmv": 236195.35, "gmv_change_pct": 0.7308, "before_visitors": 1808.0, "after_visitors": 2603.0, "visitors_change_pct": 0.4397, "before_orders": 52.0, "after_orders": 96.0, "orders_change_pct": 0.8462}, {"date": "2026-05-25", "leader": "哥登", "leader_type": "内容型", "description": "小红书内容投放7篇，目前总曝光量40w+\n768525057426，871680233534，1045996394373，920636529891，953038946045本期超级淘客扩散在数50+导购app，1500+社群线报陆续扩散了，触达量级20w+ 值得买爆料，共计产出:512单    总GMV：112.32万", "before_gmv": 140429.68, "after_gmv": 161852.25, "gmv_change_pct": 0.1526, "before_visitors": 3008.0, "after_visitors": 3339.0, "visitors_change_pct": 0.11, "before_orders": 52.0, "after_orders": 63.0, "orders_change_pct": 0.2115}, {"date": "2026-05-25", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料引流发布", "before_gmv": 145192.6, "after_gmv": 262098.37, "gmv_change_pct": 0.8052, "before_visitors": 1826.0, "after_visitors": 2655.0, "visitors_change_pct": 0.454, "before_orders": 55.0, "after_orders": 103.0, "orders_change_pct": 0.8727}, {"date": "2026-05-25", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料引流发布", "before_gmv": 145192.6, "after_gmv": 262098.37, "gmv_change_pct": 0.8052, "before_visitors": 1826.0, "after_visitors": 2655.0, "visitors_change_pct": 0.454, "before_orders": 55.0, "after_orders": 103.0, "orders_change_pct": 0.8727}, {"date": "2026-05-24", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料引流发布", "before_gmv": 228499.5, "after_gmv": 200296.46, "gmv_change_pct": -0.1234, "before_visitors": 3138.0, "after_visitors": 1811.0, "visitors_change_pct": -0.4229, "before_orders": 87.0, "after_orders": 76.0, "orders_change_pct": -0.1264}, {"date": "2026-05-24", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料引流发布", "before_gmv": 228499.5, "after_gmv": 200296.46, "gmv_change_pct": -0.1234, "before_visitors": 3138.0, "after_visitors": 1811.0, "visitors_change_pct": -0.4229, "before_orders": 87.0, "after_orders": 76.0, "orders_change_pct": -0.1264}, {"date": "2026-05-24", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料引流", "before_gmv": 228499.5, "after_gmv": 200296.46, "gmv_change_pct": -0.1234, "before_visitors": 3138.0, "after_visitors": 1811.0, "visitors_change_pct": -0.4229, "before_orders": 87.0, "after_orders": 76.0, "orders_change_pct": -0.1264}, {"date": "2026-05-21", "leader": "哥登", "leader_type": "内容型", "description": "1045783481657，1045996394373，871680233534，953038946045，768525057426，5月21日值得买爆料曝光量5.9w+ 在数30+导购app，800+社群线报陆续扩散了，触达量级8w+。整体产出179单，GMV376181.69元。", "before_gmv": 250237.62, "after_gmv": 218488.15, "gmv_change_pct": -0.1269, "before_visitors": 4575.0, "after_visitors": 4564.0, "visitors_change_pct": -0.0024, "before_orders": 82.0, "after_orders": 81.0, "orders_change_pct": -0.0122}, {"date": "2026-05-20", "leader": "集物美", "leader_type": "社群型", "description": "微博达人爆料推广", "before_gmv": 329472.03, "after_gmv": 349480.11, "gmv_change_pct": 0.0607, "before_visitors": 3522.0, "after_visitors": 3788.0, "visitors_change_pct": 0.0755, "before_orders": 122.0, "after_orders": 123.0, "orders_change_pct": 0.0082}, {"date": "2026-05-19", "leader": "值得买", "leader_type": "导购型", "description": "Y900平板线报群 达人群 导购app群全覆盖，分发100+微信群，群人数均400人以上。", "before_gmv": 688000.3, "after_gmv": 2732817.93, "gmv_change_pct": 2.9721, "before_visitors": 9281.0, "after_visitors": 15455.0, "visitors_change_pct": 0.6652, "before_orders": 160.0, "after_orders": 672.0, "orders_change_pct": 3.2}, {"date": "2026-05-19", "leader": "集物美", "leader_type": "社群型", "description": "福袋生活首页首焦", "before_gmv": 301417.17, "after_gmv": 400001.0, "gmv_change_pct": 0.3271, "before_visitors": 3913.0, "after_visitors": 4004.0, "visitors_change_pct": 0.0233, "before_orders": 125.0, "after_orders": 138.0, "orders_change_pct": 0.104}, {"date": "2026-05-19", "leader": "集物美", "leader_type": "社群型", "description": "内容推广投放", "before_gmv": 301417.17, "after_gmv": 400001.0, "gmv_change_pct": 0.3271, "before_visitors": 3913.0, "after_visitors": 4004.0, "visitors_change_pct": 0.0233, "before_orders": 125.0, "after_orders": 138.0, "orders_change_pct": 0.104}, {"date": "2026-05-18", "leader": "集物美", "leader_type": "社群型", "description": "私域流量对接投放", "before_gmv": 272062.31, "after_gmv": 469935.56, "gmv_change_pct": 0.7273, "before_visitors": 4031.0, "after_visitors": 3883.0, "visitors_change_pct": -0.0367, "before_orders": 124.0, "after_orders": 160.0, "orders_change_pct": 0.2903}, {"date": "2026-05-17", "leader": "集物美", "leader_type": "社群型", "description": "广告资源位投放", "before_gmv": 295094.56, "after_gmv": 329472.03, "gmv_change_pct": 0.1165, "before_visitors": 4373.0, "after_visitors": 3522.0, "visitors_change_pct": -0.1946, "before_orders": 138.0, "after_orders": 122.0, "orders_change_pct": -0.1159}, {"date": "2026-05-16", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料内容文案投放展现", "before_gmv": 294780.6, "after_gmv": 301417.17, "gmv_change_pct": 0.0225, "before_visitors": 4922.0, "after_visitors": 3913.0, "visitors_change_pct": -0.205, "before_orders": 141.0, "after_orders": 125.0, "orders_change_pct": -0.1135}, {"date": "2026-05-16", "leader": "集物美", "leader_type": "社群型", "description": "达人爆料内容文案投放展现", "before_gmv": 294780.6, "after_gmv": 301417.17, "gmv_change_pct": 0.0225, "before_visitors": 4922.0, "after_visitors": 3913.0, "visitors_change_pct": -0.205, "before_orders": 141.0, "after_orders": 125.0, "orders_change_pct": -0.1135}], "leaderItemImpact": [{"leader": "值得买", "leader_type": "导购型", "item_id": "1022989220404", "sub": "Y700 五代", "total_gmv": 11694148.89, "total_visitors": 91063, "total_orders": 2980, "avg_conversion": 0.0412, "peak_date": "2026-05-31", "peak_gmv": 1581525.7, "burst_ratio": 4.46, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 15, "overall_gmv": 11694148.89, "overall_conversion": 0.0412}, {"leader": "值得买", "leader_type": "导购型", "item_id": "1047659420020", "sub": "Y900 13", "total_gmv": 5067176.07, "total_visitors": 66345, "total_orders": 1290, "avg_conversion": 0.0169, "peak_date": "2026-05-20", "peak_gmv": 609319.0, "burst_ratio": 3.97, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 15, "overall_gmv": 5067176.07, "overall_conversion": 0.0169}, {"leader": "值得买", "leader_type": "导购型", "item_id": "1046778033099", "sub": "Y900 11", "total_gmv": 1075759.82, "total_visitors": 29532, "total_orders": 325, "avg_conversion": 0.0112, "peak_date": "2026-06-10", "peak_gmv": 551124.0, "burst_ratio": 9.22, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 15, "overall_gmv": 1075759.82, "overall_conversion": 0.0112}, {"leader": "哥登", "leader_type": "内容型", "item_id": "953038946045", "sub": "平板Pro GT", "total_gmv": 2044794.35, "total_visitors": 22564, "total_orders": 1008, "avg_conversion": 0.0408, "peak_date": "2026-06-06", "peak_gmv": 318254.06, "burst_ratio": 5.14, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 7, "overall_gmv": 2044794.35, "overall_conversion": 0.0408}, {"leader": "哥登", "leader_type": "内容型", "item_id": "915114997767", "sub": "Y700 四代", "total_gmv": 764221.37, "total_visitors": 23581, "total_orders": 238, "avg_conversion": 0.0093, "peak_date": "2026-05-13", "peak_gmv": 75125.66, "burst_ratio": 3.05, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 7, "overall_gmv": 764221.37, "overall_conversion": 0.0093}, {"leader": "哥登", "leader_type": "内容型", "item_id": "1045783481657", "sub": "Y700 五代", "total_gmv": 674427.92, "total_visitors": 2861, "total_orders": 174, "avg_conversion": 0.0553, "peak_date": "2026-06-15", "peak_gmv": 60945.35, "burst_ratio": 2.53, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 7, "overall_gmv": 674427.92, "overall_conversion": 0.0553}, {"leader": "哥登", "leader_type": "内容型", "item_id": "921397492411", "sub": "Yoga Pad Pro 14.5", "total_gmv": 65789.0, "total_visitors": 860, "total_orders": 11, "avg_conversion": 0.0122, "peak_date": "2026-06-08", "peak_gmv": 11998.0, "burst_ratio": 2.74, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 7, "overall_gmv": 65789.0, "overall_conversion": 0.0122}, {"leader": "集物美", "leader_type": "社群型", "item_id": "937627121390", "sub": "Y700 四代", "total_gmv": 1464295.53, "total_visitors": 12767, "total_orders": 470, "avg_conversion": 0.0311, "peak_date": "2026-05-20", "peak_gmv": 179105.04, "burst_ratio": 3.79, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 44, "overall_gmv": 1464295.53, "overall_conversion": 0.0311}, {"leader": "集物美", "leader_type": "社群型", "item_id": "1050848096551", "sub": "Y700 五代 包销", "total_gmv": 187589.07, "total_visitors": 9943, "total_orders": 44, "avg_conversion": 0.0016, "peak_date": "2026-06-14", "peak_gmv": 42780.0, "burst_ratio": 3.42, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 44, "overall_gmv": 187589.07, "overall_conversion": 0.0016}, {"leader": "集物美", "leader_type": "社群型", "item_id": "965047019480", "sub": "平板 11", "total_gmv": 191314.79, "total_visitors": 11028, "total_orders": 198, "avg_conversion": 0.0181, "peak_date": "2026-05-13", "peak_gmv": 21662.24, "burst_ratio": 3.51, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 44, "overall_gmv": 191314.79, "overall_conversion": 0.0181}, {"leader": "集物美", "leader_type": "社群型", "item_id": "921548742592", "sub": "Pad Pro 12.7", "total_gmv": 161922.29, "total_visitors": 2646, "total_orders": 87, "avg_conversion": 0.0353, "peak_date": "2026-06-11", "peak_gmv": 17179.04, "burst_ratio": 2.44, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 44, "overall_gmv": 161922.29, "overall_conversion": 0.0353}, {"leader": "集物美", "leader_type": "社群型", "item_id": "1044820190001", "sub": "Pro13", "total_gmv": 98204.22, "total_visitors": 1010, "total_orders": 47, "avg_conversion": 0.0465, "peak_date": "2026-06-01", "peak_gmv": 14353.0, "burst_ratio": 3.65, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 44, "overall_gmv": 98204.22, "overall_conversion": 0.0465}, {"leader": "集物美", "leader_type": "社群型", "item_id": "1044818058424", "sub": "平板Pro GT", "total_gmv": 71502.45, "total_visitors": 556, "total_orders": 31, "avg_conversion": 0.0609, "peak_date": "2026-06-13", "peak_gmv": 13444.0, "burst_ratio": 2.82, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 44, "overall_gmv": 71502.45, "overall_conversion": 0.0609}, {"leader": "集物美", "leader_type": "社群型", "item_id": "1046007129328", "sub": "平板12.1", "total_gmv": 9986.95, "total_visitors": 236, "total_orders": 7, "avg_conversion": 0.0344, "peak_date": "2026-06-02", "peak_gmv": 2577.98, "burst_ratio": 4.39, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 44, "overall_gmv": 9986.95, "overall_conversion": 0.0344}, {"leader": "荣牛哥", "leader_type": "内容型", "item_id": "1027731755179", "sub": "Y700 五代 包销", "total_gmv": 1965848.44, "total_visitors": 22987, "total_orders": 314, "avg_conversion": 0.0134, "peak_date": "2026-05-21", "peak_gmv": 150847.88, "burst_ratio": 2.53, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 1965848.44, "overall_conversion": 0.0134}, {"leader": "荣牛哥", "leader_type": "内容型", "item_id": "1022202769573", "sub": "Pro13", "total_gmv": 768705.88, "total_visitors": 11822, "total_orders": 379, "avg_conversion": 0.0354, "peak_date": "2026-05-20", "peak_gmv": 66048.09, "burst_ratio": 2.75, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 768705.88, "overall_conversion": 0.0354}, {"leader": "荣牛哥", "leader_type": "内容型", "item_id": "953660721948", "sub": "平板12.1", "total_gmv": 486686.11, "total_visitors": 30214, "total_orders": 415, "avg_conversion": 0.014, "peak_date": "2026-05-15", "peak_gmv": 47107.6, "burst_ratio": 3.19, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 486686.11, "overall_conversion": 0.014}, {"leader": "荣牛哥", "leader_type": "内容型", "item_id": "915506081434", "sub": "平板 11", "total_gmv": 126229.36, "total_visitors": 12108, "total_orders": 127, "avg_conversion": 0.014, "peak_date": "2026-05-27", "peak_gmv": 10922.27, "burst_ratio": 2.77, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 126229.36, "overall_conversion": 0.014}, {"leader": "荣牛哥", "leader_type": "内容型", "item_id": "1052376710622", "sub": "Y700 五代", "total_gmv": 0.0, "total_visitors": 11, "total_orders": 0, "avg_conversion": 0.0, "peak_date": "2026-05-22", "peak_gmv": 0.0, "burst_ratio": 0.0, "gmv_share": 0.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 0.0, "overall_conversion": 0.0}, {"leader": "多淘", "leader_type": "社群型", "item_id": "814178698074", "sub": "Pad Pro 12.7", "total_gmv": 1883144.18, "total_visitors": 28793, "total_orders": 1049, "avg_conversion": 0.0351, "peak_date": "2026-05-22", "peak_gmv": 205264.27, "burst_ratio": 3.6, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 1883144.18, "overall_conversion": 0.0351}, {"leader": "多淘", "leader_type": "社群型", "item_id": "955631195250", "sub": "平板12.1", "total_gmv": 906641.98, "total_visitors": 19752, "total_orders": 772, "avg_conversion": 0.0459, "peak_date": "2026-05-21", "peak_gmv": 62702.94, "burst_ratio": 2.21, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 906641.98, "overall_conversion": 0.0459}, {"leader": "多淘", "leader_type": "社群型", "item_id": "674626793026", "sub": "平板 11", "total_gmv": 606162.04, "total_visitors": 23779, "total_orders": 617, "avg_conversion": 0.0296, "peak_date": "2026-05-31", "peak_gmv": 47984.33, "burst_ratio": 2.53, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 606162.04, "overall_conversion": 0.0296}, {"leader": "美豆科技", "leader_type": "社群型", "item_id": "956873308796", "sub": "平板Pro GT", "total_gmv": 115424.81, "total_visitors": 5942, "total_orders": 59, "avg_conversion": 0.0372, "peak_date": "2026-06-15", "peak_gmv": 56531.91, "burst_ratio": 9.8, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 115424.81, "overall_conversion": 0.0372}, {"leader": "美豆科技", "leader_type": "社群型", "item_id": "1046658968470", "sub": "Pro13", "total_gmv": 104321.29, "total_visitors": 6512, "total_orders": 50, "avg_conversion": 0.0856, "peak_date": "2026-05-30", "peak_gmv": 8366.0, "burst_ratio": 1.92, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 104321.29, "overall_conversion": 0.0856}, {"leader": "合盈", "leader_type": "社群型", "item_id": "1044085639151", "sub": "Y700 五代", "total_gmv": 59717.0, "total_visitors": 490, "total_orders": 18, "avg_conversion": 0.0418, "peak_date": "2026-05-21", "peak_gmv": 9457.0, "burst_ratio": 2.53, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 59717.0, "overall_conversion": 0.0418}, {"leader": "合盈", "leader_type": "社群型", "item_id": "1044077227540", "sub": "Pad Pro 12.7", "total_gmv": 29754.72, "total_visitors": 408, "total_orders": 16, "avg_conversion": 0.0517, "peak_date": "2026-05-17", "peak_gmv": 5887.0, "burst_ratio": 3.76, "gmv_share": 1.0, "visitors_share": 1.0, "conversion_lift": 0.0, "action_count": 0, "overall_gmv": 29754.72, "overall_conversion": 0.0517}], "highlights": [{"type": "商品", "name": "Y700 五代", "metric": "GMV 1242.8万, 转化率 4.42%", "detail": "峰值 2026-05-31 (158.2万), 最佳渠道 值得买(导购型) 贡献 1169.4万", "suggestion": "持续加大值得买投放，维持爆款势头"}, {"type": "商品", "name": "平板Pro GT", "metric": "GMV 223.2万, 转化率 4.42%", "detail": "峰值 2026-06-06 (31.8万), 最佳渠道 哥登(内容型) 贡献 204.5万", "suggestion": "持续加大哥登投放，维持爆款势头"}, {"type": "团长(社群型)", "name": "多淘", "metric": "GMV 339.6万, ROI 30.9x, 转化率 3.69%", "detail": "高于大盘转化率 34%, 进店 72324人", "suggestion": "扩大合作规模，增加更多商品供给"}, {"type": "导购型对商品影响", "name": "值得买 → Y900 13", "metric": "贡献GMV 506.7万 (占该品 100%)", "detail": "值得买转化率 1.69% vs 整体 1.69%, 进店 66345人", "suggestion": "值得买是Y900 13的核心爆发渠道，建议持续深耕"}, {"type": "内容型对商品影响", "name": "内容型 → 平板Pro GT", "metric": "贡献GMV 204.5万 (占该品 92%)", "detail": "内容型转化率 4.08% vs 整体 4.42%, 进店 22564人", "suggestion": "内容型适合种草蓄水，建议与社群型组合放大转化"}], "lowlights": [{"type": "商品", "name": "Y900 11", "metric": "GMV 107.6万, 转化率 1.12%", "detail": "转化率低于大盘均值 (2.75%), 流量效率偏低", "suggestion": "评估是否调整佣金比例或更换团长渠道"}, {"type": "商品", "name": "Y700 五代 包销", "metric": "GMV 215.3万, 转化率 0.97%", "detail": "转化率低于大盘均值 (2.75%), 流量效率偏低", "suggestion": "评估是否调整佣金比例或更换团长渠道"}, {"type": "商品", "name": "Yoga Pad Pro 14.5", "metric": "GMV 6.6万, 转化率 1.22%", "detail": "转化率低于大盘均值 (2.75%), 流量效率偏低", "suggestion": "评估是否调整佣金比例或更换团长渠道"}], "actionImpactByType": [{"type": "导购型", "action_count": 14, "avg_gmv_change": 0.7147, "avg_visitors_change": 0.0822, "avg_orders_change": 0.7784, "positive_rate": 0.7857}, {"type": "内容型", "action_count": 6, "avg_gmv_change": 0.1068, "avg_visitors_change": -0.0106, "avg_orders_change": 0.1555, "positive_rate": 0.6667}, {"type": "社群型", "action_count": 39, "avg_gmv_change": 0.3644, "avg_visitors_change": 0.7677, "avg_orders_change": 0.2053, "positive_rate": 0.8462}], "actionGmvCorrelation": [{"action_date": "2026-05-13", "action_count": 18, "next_day_gmv": 389049.55}, {"action_date": "2026-05-14", "action_count": 2, "next_day_gmv": 583535.44}, {"action_date": "2026-05-15", "action_count": 4, "next_day_gmv": 475390.62}, {"action_date": "2026-05-16", "action_count": 13, "next_day_gmv": 361366.68}, {"action_date": "2026-05-17", "action_count": 2, "next_day_gmv": 809674.77}, {"action_date": "2026-05-18", "action_count": 7, "next_day_gmv": 1185965.64}, {"action_date": "2026-05-19", "action_count": 14, "next_day_gmv": 1658781.96}, {"action_date": "2026-05-20", "action_count": 6, "next_day_gmv": 1416124.4}, {"action_date": "2026-05-21", "action_count": 3, "next_day_gmv": 1041345.26}, {"action_date": "2026-05-22", "action_count": 5, "next_day_gmv": 767503.17}, {"action_date": "2026-05-23", "action_count": 4, "next_day_gmv": 145944.18}, {"action_date": "2026-05-24", "action_count": 4, "next_day_gmv": 542938.34}, {"action_date": "2026-05-25", "action_count": 7, "next_day_gmv": 832551.72}, {"action_date": "2026-05-26", "action_count": 10, "next_day_gmv": 665538.63}, {"action_date": "2026-05-27", "action_count": 3, "next_day_gmv": 728472.15}, {"action_date": "2026-05-28", "action_count": 8, "next_day_gmv": 771974.18}, {"action_date": "2026-05-29", "action_count": 4, "next_day_gmv": 1949391.77}, {"action_date": "2026-05-30", "action_count": 2, "next_day_gmv": 2328000.56}, {"action_date": "2026-05-31", "action_count": 8, "next_day_gmv": 1730267.1}, {"action_date": "2026-06-01", "action_count": 7, "next_day_gmv": 830074.97}, {"action_date": "2026-06-02", "action_count": 4, "next_day_gmv": 611128.44}, {"action_date": "2026-06-03", "action_count": 5, "next_day_gmv": 575498.45}, {"action_date": "2026-06-04", "action_count": 4, "next_day_gmv": 747559.5}, {"action_date": "2026-06-05", "action_count": 20, "next_day_gmv": 1246825.92}, {"action_date": "2026-06-06", "action_count": 3, "next_day_gmv": 853542.47}, {"action_date": "2026-06-07", "action_count": 2, "next_day_gmv": 1022637.83}, {"action_date": "2026-06-08", "action_count": 10, "next_day_gmv": 676686.86}, {"action_date": "2026-06-09", "action_count": 8, "next_day_gmv": 1594786.5}, {"action_date": "2026-06-10", "action_count": 7, "next_day_gmv": 1253721.89}, {"action_date": "2026-06-12", "action_count": 7, "next_day_gmv": 613361.7}, {"action_date": "2026-06-13", "action_count": 6, "next_day_gmv": 473927.29}, {"action_date": "2026-06-14", "action_count": 2, "next_day_gmv": 1268221.24}], "correlationCoefficient": -0.029, "typeItemMatrix": [{"leader_type": "导购型", "sub": "Y700 五代", "gmv": 11694148.89, "visitors": 91063, "orders": 2980, "conversion": 0.0412, "roi": 26.69}, {"leader_type": "导购型", "sub": "Y900 13", "gmv": 5067176.07, "visitors": 66345, "orders": 1290, "conversion": 0.0169, "roi": 28.14}, {"leader_type": "导购型", "sub": "Y900 11", "gmv": 1075759.82, "visitors": 29532, "orders": 325, "conversion": 0.0112, "roi": 31.21}, {"leader_type": "内容型", "sub": "Y700 五代", "gmv": 674427.92, "visitors": 2872, "orders": 174, "conversion": 0.0484, "roi": 33.14}, {"leader_type": "内容型", "sub": "平板Pro GT", "gmv": 2044794.35, "visitors": 22564, "orders": 1008, "conversion": 0.0408, "roi": 28.44}, {"leader_type": "内容型", "sub": "Y700 四代", "gmv": 764221.37, "visitors": 23581, "orders": 238, "conversion": 0.0093, "roi": 31.02}, {"leader_type": "内容型", "sub": "Y700 五代 包销", "gmv": 1965848.44, "visitors": 22987, "orders": 314, "conversion": 0.0134, "roi": 29.75}, {"leader_type": "内容型", "sub": "Pro13", "gmv": 768705.88, "visitors": 11822, "orders": 379, "conversion": 0.0354, "roi": 29.87}, {"leader_type": "内容型", "sub": "平板12.1", "gmv": 486686.11, "visitors": 30214, "orders": 415, "conversion": 0.014, "roi": 35.91}, {"leader_type": "内容型", "sub": "平板 11", "gmv": 126229.36, "visitors": 12108, "orders": 127, "conversion": 0.014, "roi": 29.78}, {"leader_type": "内容型", "sub": "Yoga Pad Pro 14.5", "gmv": 65789.0, "visitors": 860, "orders": 11, "conversion": 0.0122, "roi": 45.01}, {"leader_type": "社群型", "sub": "Y700 五代", "gmv": 59717.0, "visitors": 490, "orders": 18, "conversion": 0.0418, "roi": 30.89}, {"leader_type": "社群型", "sub": "平板Pro GT", "gmv": 186927.26, "visitors": 6498, "orders": 90, "conversion": 0.0474, "roi": 39.35}, {"leader_type": "社群型", "sub": "Y700 四代", "gmv": 1464295.53, "visitors": 12767, "orders": 470, "conversion": 0.0311, "roi": 28.06}, {"leader_type": "社群型", "sub": "Y700 五代 包销", "gmv": 187589.07, "visitors": 9943, "orders": 44, "conversion": 0.0016, "roi": 26.04}, {"leader_type": "社群型", "sub": "Pad Pro 12.7", "gmv": 2074821.19, "visitors": 31855, "orders": 1152, "conversion": 0.0369, "roi": 33.29}, {"leader_type": "社群型", "sub": "Pro13", "gmv": 202525.51, "visitors": 7522, "orders": 97, "conversion": 0.0656, "roi": 33.15}, {"leader_type": "社群型", "sub": "平板12.1", "gmv": 916628.93, "visitors": 19988, "orders": 779, "conversion": 0.0419, "roi": 28.84}, {"leader_type": "社群型", "sub": "平板 11", "gmv": 797476.83, "visitors": 34807, "orders": 815, "conversion": 0.0239, "roi": 28.28}], "bestTypePerItem": [{"sub": "Y700 五代", "best_type": "导购型", "best_gmv": 11694148.89, "best_conv": 0.0412, "best_roi": 26.69}, {"sub": "Y900 13", "best_type": "导购型", "best_gmv": 5067176.07, "best_conv": 0.0169, "best_roi": 28.14}, {"sub": "Y900 11", "best_type": "导购型", "best_gmv": 1075759.82, "best_conv": 0.0112, "best_roi": 31.21}, {"sub": "平板Pro GT", "best_type": "内容型", "best_gmv": 2044794.35, "best_conv": 0.0408, "best_roi": 28.44}, {"sub": "Y700 四代", "best_type": "社群型", "best_gmv": 1464295.53, "best_conv": 0.0311, "best_roi": 28.06}, {"sub": "Y700 五代 包销", "best_type": "内容型", "best_gmv": 1965848.44, "best_conv": 0.0134, "best_roi": 29.75}, {"sub": "Pro13", "best_type": "内容型", "best_gmv": 768705.88, "best_conv": 0.0354, "best_roi": 29.87}, {"sub": "平板12.1", "best_type": "社群型", "best_gmv": 916628.93, "best_conv": 0.0419, "best_roi": 28.84}, {"sub": "平板 11", "best_type": "社群型", "best_gmv": 797476.83, "best_conv": 0.0239, "best_roi": 28.28}, {"sub": "Yoga Pad Pro 14.5", "best_type": "内容型", "best_gmv": 65789.0, "best_conv": 0.0122, "best_roi": 45.01}]}};
+    </script>
+
+    <script>
+    // Theme toggle
+    function toggleTheme() {
+        const html = document.documentElement;
+        const isDark = html.classList.toggle('dark');
+        document.getElementById('themeIcon').textContent = isDark ? '🌙' : '☀️';
+        document.getElementById('themeText').textContent = isDark ? '深色模式' : '浅色模式';
+        renderAllCharts();
+    }
+
+    // Tab switching
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('tab-' + tabName).classList.add('active');
+        setTimeout(() => { Object.values(charts).forEach(c => c && c.resize()); }, 100);
+    }
+
+    // Format numbers
+    function fmt(n) {
+        if (n >= 10000) return (n / 10000).toFixed(1) + '万';
+        if (n >= 1000) return (n / 1000).toFixed(1) + '千';
+        return n.toLocaleString();
+    }
+    function fmtMoney(n) { return '¥' + n.toLocaleString('zh-CN', {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+    function fmtPct(n) { return (n * 100).toFixed(1) + '%'; }
+
+    const charts = {};
+
+    function getThemeColors() {
+        const isDark = document.documentElement.classList.contains('dark');
+        return {
+            bg: 'transparent', text: isDark ? '#e2e8f0' : '#1e293b',
+            muted: isDark ? '#64748b' : '#94a3b8', border: isDark ? '#334155' : '#e2e8f0',
+            grid: isDark ? '#1e293b' : '#f1f5f9',
+            colors: ['#3b82f6', '#60a5fa', '#2563eb', '#93c5fd', '#1d4ed8', '#f97316', '#ef4444', '#8b5cf6', '#22c55e', '#eab308']
+        };
+    }
+
+    // Render KPI cards
+    function renderKPIs() {
+        const s = DATA.summary;
+        const kpis = [
+            { label: '总GMV', value: fmt(s.totalGmv), unit: '元' },
+            { label: '总佣金', value: fmt(s.totalCommission), unit: '元' },
+            { label: '总支出费用', value: fmt(s.totalCost), unit: '元' },
+            { label: 'ROI', value: s.roi.toFixed(1) + 'x', unit: '' },
+            { label: '总进店人数', value: fmt(s.totalVisitors), unit: '人' },
+            { label: '总付款件数', value: fmt(s.totalOrders), unit: '件' },
+            { label: '平均转化率', value: fmtPct(s.avgConversion), unit: '' },
+            { label: '佣金率', value: fmtPct(s.commissionRate), unit: '' },
+            { label: '参与团长', value: s.leaderCount, unit: '个' },
+            { label: '带货商品', value: s.itemCount, unit: '个' },
+            { label: '团长动作', value: s.actionCount, unit: '次' },
+        ];
+        document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
+            <div class="kpi-card"><div class="kpi-label">${k.label}</div>
+            <div class="kpi-value">${k.value} <span class="kpi-unit">${k.unit}</span></div></div>`).join('');
+    }
+
+    function renderTypeKPIs() {
+        document.getElementById('typeKpiGrid').innerHTML = DATA.types.map(t => `
+            <div class="kpi-card"><div class="kpi-label">${t.name}</div>
+            <div class="kpi-value">${fmt(t.gmv)} <span class="kpi-unit">元</span></div>
+            <div class="kpi-change">${fmtPct(t.pct)} 占比</div></div>`).join('');
+    }
+
+    // ==================== INSIGHT RENDERING ====================
+    function renderInsightActionKpi() {
+        const aib = DATA.analysis.actionImpactByType;
+        const corr = DATA.analysis.correlationCoefficient;
+        const totalActions = DATA.analysis.actionImpact.length;
+        const positiveActions = DATA.analysis.actionImpact.filter(a => a.gmv_change_pct > 0).length;
+
+        document.getElementById('insightActionKpi').innerHTML = [
+            { label: '有效动作分析', value: totalActions, unit: '次' },
+            { label: '正向GMV变化', value: (positiveActions/totalActions*100).toFixed(0) + '%', unit: `(${positiveActions}/${totalActions})` },
+            { label: '动作-次日GMV相关系数', value: corr.toFixed(3), unit: corr > 0.3 ? '强正相关' : corr > 0 ? '弱正相关' : '弱负相关' },
+            { label: '导购型平均GMV变化', value: (aib.find(a=>a.type==='导购型')?.avg_gmv_change || 0 * 100).toFixed(1) + '%', unit: '' },
+            { label: '社群型平均GMV变化', value: (aib.find(a=>a.type==='社群型')?.avg_gmv_change || 0 * 100).toFixed(1) + '%', unit: '' },
+            { label: '内容型平均GMV变化', value: (aib.find(a=>a.type==='内容型')?.avg_gmv_change || 0 * 100).toFixed(1) + '%', unit: '' },
+        ].map(k => `
+            <div class="kpi-card"><div class="kpi-label">${k.label}</div>
+            <div class="kpi-value">${k.value} <span class="kpi-unit">${k.unit}</span></div></div>`).join('');
+    }
+
+    function renderHighlights() {
+        const container = document.getElementById('highlightsList');
+        container.innerHTML = DATA.analysis.highlights.map(h => `
+            <div class="insight-item highlight-card" style="padding:10px 14px;margin-bottom:8px">
+                <h4 style="font-size:14px;margin-bottom:4px"><span class="badge badge-green">${h.type}</span> ${h.name}</h4>
+                <div style="font-size:13px;color:hsl(var(--muted-foreground))">${h.metric} | ${h.detail}</div>
+            </div>`).join('');
+    }
+
+    function renderLowlights() {
+        const container = document.getElementById('lowlightsList');
+        container.innerHTML = DATA.analysis.lowlights.map(l => `
+            <div class="insight-item lowlight-card" style="padding:10px 14px;margin-bottom:8px">
+                <h4 style="font-size:14px;margin-bottom:4px"><span class="badge badge-red">${l.type}</span> ${l.name}</h4>
+                <div style="font-size:13px;color:hsl(var(--muted-foreground))">${l.metric} | ${l.detail}</div>
+            </div>`).join('');
+    }
+
+    function renderStrategyCards() {
+        const container = document.getElementById('strategyCards');
+        const typeColors = { '导购型': 'badge-blue', '内容型': 'badge-orange', '社群型': 'badge-green' };
+        container.innerHTML = DATA.analysis.bestTypePerItem.map(b => `
+            <div class="strategy-card">
+                <h4>${b.sub}</h4>
+                <div class="best-type">最佳渠道: <span class="badge ${typeColors[b.best_type] || 'badge-gray'}">${b.best_type}</span></div>
+                <div class="metrics">
+                    GMV: ${(b.best_gmv/10000).toFixed(1)}万 · 转化率: ${(b.best_conv*100).toFixed(1)}% · ROI: ${b.best_roi.toFixed(1)}x
+                </div>
+            </div>`).join('');
+    }
+
+    function renderStrategySummary() {
+        const bt = DATA.analysis.bestTypePerItem;
+        const typeCounts = {};
+        bt.forEach(b => { typeCounts[b.best_type] = (typeCounts[b.best_type] || 0) + 1; });
+
+        // Find Y900 items
+        const y900 = bt.filter(b => b.sub.includes('Y900'));
+        const xiaoxin = bt.filter(b => b.sub.includes('小新') || b.sub.includes('Pad'));
+        const y700 = bt.filter(b => b.sub.includes('Y700'));
+        const pro = bt.filter(b => b.sub.includes('Pro') && !b.sub.includes('Yoga'));
+
+        let html = `<p><strong>核心结论：</strong></p><ul style="margin:8px 0 16px 20px">`;
+        html += `<li><strong>导购型（值得买）</strong>是高端游戏平板（Y900系列、Y700五代）的绝对主力渠道，贡献了Y900系列100%的淘客GMV，转化率虽偏低但规模效应显著，ROI稳定在28-31x。</li>`;
+        html += `<li><strong>社群型（多淘、集物美等）</strong>是Pad系列（Pad Pro 12.7、平板12.1、Pro13等）的最优渠道，转化率普遍在3-5%区间，ROI达30-33x，适合走量型中端产品。</li>`;
+        html += `<li><strong>内容型（哥登、荣牛哥）</strong>在平板Pro GT上表现突出（哥登贡献92%GMV，转化率4.08%），荣牛哥在内容种草方面也有独特优势，适合需要内容深度讲解的新品/差异化产品。</li>`;
+        html += `</ul>`;
+
+        html += `<p><strong>差异化策略建议：</strong></p><ul style="margin:8px 0 16px 20px">`;
+        html += `<li>🎯 <strong>拯救者系列（Y900/Y700）</strong>：继续深耕值得买渠道，建议增加专属佣金激励和独家SKU供给，维持销量爆发势头。</li>`;
+        html += `<li>🎯 <strong>小新/Pad系列</strong>：以社群型淘客（多淘、集物美）为主力，搭配内容型淘客（哥登、荣牛哥）做种草蓄水，形成"内容引流→社群转化"的闭环。</li>`;
+        html += `<li>🎯 <strong>Pro GT等差异化产品</strong>：优先投放内容型团长（哥登、荣牛哥），利用内容深度讲解产品差异化卖点，提升转化效率。</li>`;
+
+        html += `</ul>`;
+
+        html += `<p><strong>动作优化建议：</strong></p><ul style="margin:8px 0 0 20px">`;
+        html += `<li>导购型动作后GMV平均增长71.5%，正向率79%，建议在618等大促节点集中投放。</li>`;
+        html += `<li>社群型动作正向率最高（85%），但平均增幅36.4%，建议增加动作频次和覆盖商品数。</li>`;
+        html += `<li>内容型动作正向率67%，平均增幅10.7%，建议优化内容质量和选品匹配度。</li>`;
+        html += `<li>动作-次日GMV相关系数接近0（-0.029），说明动作的即时拉动效果有限，建议优化动作质量而非数量。</li>`;
+        html += `</ul>`;
+
+        document.getElementById('strategySummary').innerHTML = html;
+    }
+
+    // Render all charts
+    function renderAllCharts() {
+        const tc = getThemeColors();
+
+        // Overview: Daily trend
+        if (charts.overviewTrend) charts.overviewTrend.dispose();
+        charts.overviewTrend = echarts.init(document.getElementById('chartOverviewTrend'));
+        charts.overviewTrend.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+            legend: { data: ['付款金额(万元)', '进店人数'], textStyle: { color: tc.text } },
+            grid: { left: 60, right: 60, top: 40, bottom: 40 },
+            xAxis: { type: 'category', data: DATA.daily.map(d => d.date.slice(5)), axisLabel: { color: tc.muted, rotate: 45 }, axisLine: { lineStyle: { color: tc.border } } },
+            yAxis: [
+                { type: 'value', name: '万元', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted }, splitLine: { lineStyle: { color: tc.border } } },
+                { type: 'value', name: '人数', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted }, splitLine: { show: false } }
+            ],
+            series: [
+                { name: '付款金额(万元)', type: 'bar', data: DATA.daily.map(d => (d.gmv / 10000).toFixed(1)), itemStyle: { color: '#3b82f6', borderRadius: [4, 4, 0, 0] } },
+                { name: '进店人数', type: 'line', yAxisIndex: 1, data: DATA.daily.map(d => d.visitors), smooth: true, itemStyle: { color: '#ef4444' }, lineStyle: { width: 2 }, symbol: 'circle', symbolSize: 6 }
+            ]
+        });
+
+        // Overview: Leader bar
+        if (charts.overviewLeader) charts.overviewLeader.dispose();
+        const leaders = DATA.leaders.slice(0, 8);
+        charts.overviewLeader = echarts.init(document.getElementById('chartOverviewLeader'));
+        charts.overviewLeader.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => `${p[0].name}<br/>GMV: ¥${(p[0].value).toLocaleString()}` },
+            grid: { left: 80, right: 60, top: 10, bottom: 30 },
+            xAxis: { type: 'value', axisLabel: { color: tc.muted, formatter: v => (v/10000).toFixed(0) + '万' }, splitLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'category', data: leaders.map(l => l.name).reverse(), axisLabel: { color: tc.text } },
+            series: [{ type: 'bar', data: leaders.map(l => l.gmv).reverse(), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#3b82f6' }, { offset: 1, color: '#60a5fa' }]), borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', formatter: p => (p.value/10000).toFixed(1) + '万', color: tc.text, fontSize: 11 } }]
+        });
+
+        // Overview: Type pie
+        if (charts.overviewType) charts.overviewType.dispose();
+        charts.overviewType = echarts.init(document.getElementById('chartOverviewType'));
+        charts.overviewType.setOption({
+            tooltip: { trigger: 'item', formatter: p => `${p.name}<br/>GMV: ¥${(p.value).toLocaleString()} (${p.percent}%)` },
+            legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { color: tc.text } },
+            series: [{ type: 'pie', radius: ['40%', '70%'], center: ['40%', '50%'], data: DATA.types.map((t, i) => ({ name: t.name, value: t.gmv, itemStyle: { color: tc.colors[i] } })), label: { color: tc.text, formatter: '{b}\n{d}%' }, emphasis: { itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.3)' } } }]
+        });
+
+        // Trend: GMV area
+        if (charts.trendGmv) charts.trendGmv.dispose();
+        charts.trendGmv = echarts.init(document.getElementById('chartTrendGmv'));
+        charts.trendGmv.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>GMV: ¥${(p[0].value).toLocaleString()}` },
+            grid: { left: 70, right: 30, top: 30, bottom: 40 },
+            xAxis: { type: 'category', data: DATA.daily.map(d => d.date), axisLabel: { color: tc.muted, rotate: 45 }, axisLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'value', name: '元', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted, formatter: v => (v/10000).toFixed(0) + '万' }, splitLine: { lineStyle: { color: tc.border } } },
+            series: [{ type: 'line', data: DATA.daily.map(d => d.gmv), smooth: true, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(59,130,246,0.3)' }, { offset: 1, color: 'rgba(59,130,246,0.02)' }]) }, itemStyle: { color: '#3b82f6' }, lineStyle: { width: 2 } }]
+        });
+
+        // Trend: Conversion
+        if (charts.trendConversion) charts.trendConversion.dispose();
+        charts.trendConversion = echarts.init(document.getElementById('chartTrendConversion'));
+        charts.trendConversion.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>转化率: ${(p[0].value * 100).toFixed(2)}%` },
+            grid: { left: 50, right: 20, top: 20, bottom: 40 },
+            xAxis: { type: 'category', data: DATA.daily.map(d => d.date.slice(5)), axisLabel: { color: tc.muted, rotate: 45 }, axisLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'value', name: '%', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted, formatter: v => (v * 100).toFixed(1) + '%' }, splitLine: { lineStyle: { color: tc.border } } },
+            series: [{ type: 'line', data: DATA.daily.map(d => d.conversion), smooth: true, itemStyle: { color: '#22c55e' }, lineStyle: { width: 2 }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(34,197,94,0.2)' }, { offset: 1, color: 'rgba(34,197,94,0.02)' }]) } }]
+        });
+
+        // Trend: Cost
+        if (charts.trendCost) charts.trendCost.dispose();
+        charts.trendCost = echarts.init(document.getElementById('chartTrendCost'));
+        charts.trendCost.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>支出: ¥${p[0].value.toLocaleString()}` },
+            grid: { left: 60, right: 20, top: 20, bottom: 40 },
+            xAxis: { type: 'category', data: DATA.daily.map(d => d.date.slice(5)), axisLabel: { color: tc.muted, rotate: 45 }, axisLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'value', name: '元', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted, formatter: v => (v/10000).toFixed(1) + '万' }, splitLine: { lineStyle: { color: tc.border } } },
+            series: [{ type: 'bar', data: DATA.daily.map(d => d.cost), itemStyle: { color: '#f97316', borderRadius: [4, 4, 0, 0] } }]
+        });
+
+        // Trend: Type stacked
+        if (charts.trendTypeStack) charts.trendTypeStack.dispose();
+        const typeNames = DATA.dailyType.length > 0 ? Object.keys(DATA.dailyType[0]).filter(k => k !== 'date') : [];
+        charts.trendTypeStack = echarts.init(document.getElementById('chartTrendTypeStack'));
+        const typeColors = { '导购型': '#3b82f6', '内容型': '#f97316', '社群型': '#22c55e', '其他': '#64748b' };
+        charts.trendTypeStack.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => { let s = p[0].name + '<br/>'; p.forEach(i => s += `${i.marker} ${i.seriesName}: ¥${i.value.toLocaleString()}<br/>`); return s; } },
+            legend: { data: typeNames, textStyle: { color: tc.text }, top: 0 },
+            grid: { left: 70, right: 30, top: 40, bottom: 40 },
+            xAxis: { type: 'category', data: DATA.dailyType.map(d => d.date.slice(5)), axisLabel: { color: tc.muted, rotate: 45 }, axisLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'value', name: '元', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted, formatter: v => (v/10000).toFixed(0) + '万' }, splitLine: { lineStyle: { color: tc.border } } },
+            series: typeNames.map(name => ({ name, type: 'bar', stack: 'total', data: DATA.dailyType.map(d => d[name] || 0), itemStyle: { color: typeColors[name] || '#64748b' } }))
+        });
+
+        // Leader: ROI
+        if (charts.leaderRoi) charts.leaderRoi.dispose();
+        charts.leaderRoi = echarts.init(document.getElementById('chartLeaderRoi'));
+        charts.leaderRoi.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>ROI: ${p[0].value}x` },
+            grid: { left: 80, right: 40, top: 10, bottom: 30 },
+            xAxis: { type: 'value', name: 'ROI', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted }, splitLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'category', data: leaders.map(l => l.name).reverse(), axisLabel: { color: tc.text } },
+            series: [{ type: 'bar', data: leaders.map(l => l.roi).reverse(), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#22c55e' }, { offset: 1, color: '#4ade80' }]), borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', formatter: p => p.value.toFixed(1) + 'x', color: tc.text, fontSize: 11 } }]
+        });
+
+        // Leader: Visitors
+        if (charts.leaderVisitors) charts.leaderVisitors.dispose();
+        charts.leaderVisitors = echarts.init(document.getElementById('chartLeaderVisitors'));
+        charts.leaderVisitors.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>进店: ${p[0].value.toLocaleString()}人` },
+            grid: { left: 80, right: 40, top: 10, bottom: 30 },
+            xAxis: { type: 'value', axisLabel: { color: tc.muted, formatter: v => (v/10000).toFixed(1) + '万' }, splitLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'category', data: leaders.map(l => l.name).reverse(), axisLabel: { color: tc.text } },
+            series: [{ type: 'bar', data: leaders.map(l => l.visitors).reverse(), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#8b5cf6' }, { offset: 1, color: '#a78bfa' }]), borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', formatter: p => fmt(p.value), color: tc.text, fontSize: 11 } }]
+        });
+
+        // Type: GMV Pie
+        if (charts.typeGmvPie) charts.typeGmvPie.dispose();
+        charts.typeGmvPie = echarts.init(document.getElementById('chartTypeGmvPie'));
+        charts.typeGmvPie.setOption({
+            tooltip: { trigger: 'item', formatter: p => `${p.name}<br/>GMV: ¥${(p.value).toLocaleString()} (${p.percent}%)` },
+            legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { color: tc.text } },
+            series: [{ type: 'pie', radius: ['40%', '70%'], center: ['40%', '50%'], data: DATA.types.map((t, i) => ({ name: t.name, value: t.gmv, itemStyle: { color: tc.colors[i] } })), label: { color: tc.text, formatter: '{b}\n{d}%' } }]
+        });
+
+        // Type: Visitor Pie
+        if (charts.typeVisitorPie) charts.typeVisitorPie.dispose();
+        charts.typeVisitorPie = echarts.init(document.getElementById('chartTypeVisitorPie'));
+        charts.typeVisitorPie.setOption({
+            tooltip: { trigger: 'item', formatter: p => `${p.name}<br/>进店: ${p.value.toLocaleString()}人 (${p.percent}%)` },
+            legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { color: tc.text } },
+            series: [{ type: 'pie', radius: ['40%', '70%'], center: ['40%', '50%'], data: DATA.types.map((t, i) => ({ name: t.name, value: t.visitors, itemStyle: { color: tc.colors[i] } })), label: { color: tc.text, formatter: '{b}\n{d}%' } }]
+        });
+
+        // Item: GMV bar
+        if (charts.itemGmv) charts.itemGmv.dispose();
+        const topItems = DATA.items.slice(0, 15);
+        charts.itemGmv = echarts.init(document.getElementById('chartItemGmv'));
+        charts.itemGmv.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => `${p[0].name}<br/>GMV: ¥${(p[0].value).toLocaleString()}` },
+            grid: { left: 180, right: 60, top: 10, bottom: 30 },
+            xAxis: { type: 'value', axisLabel: { color: tc.muted, formatter: v => (v/10000).toFixed(0) + '万' }, splitLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'category', data: topItems.map(i => i.sub + ' (' + i.leader + ')').reverse(), axisLabel: { color: tc.text, fontSize: 11 } },
+            series: [{ type: 'bar', data: topItems.map(i => i.gmv).reverse(), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#1d4ed8' }, { offset: 1, color: '#60a5fa' }]), borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', formatter: p => (p.value/10000).toFixed(1) + '万', color: tc.text, fontSize: 10 } }]
+        });
+
+        // Action: Timeline
+        if (charts.actionTimeline) charts.actionTimeline.dispose();
+        charts.actionTimeline = echarts.init(document.getElementById('chartActionTimeline'));
+        charts.actionTimeline.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>动作次数: ${p[0].value}` },
+            grid: { left: 50, right: 30, top: 20, bottom: 40 },
+            xAxis: { type: 'category', data: DATA.actionDaily.map(d => d.date.slice(5)), axisLabel: { color: tc.muted, rotate: 45 }, axisLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'value', name: '次数', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted }, splitLine: { lineStyle: { color: tc.border } } },
+            series: [{ type: 'line', data: DATA.actionDaily.map(d => d.count), smooth: true, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(139,92,246,0.3)' }, { offset: 1, color: 'rgba(139,92,246,0.02)' }]) }, itemStyle: { color: '#8b5cf6' }, lineStyle: { width: 2 } }]
+        });
+
+        // Action: Leader bar
+        if (charts.actionLeader) charts.actionLeader.dispose();
+        charts.actionLeader = echarts.init(document.getElementById('chartActionLeader'));
+        charts.actionLeader.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>动作: ${p[0].value}次` },
+            grid: { left: 90, right: 40, top: 10, bottom: 30 },
+            xAxis: { type: 'value', axisLabel: { color: tc.muted }, splitLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'category', data: DATA.actions.map(a => a.name).reverse(), axisLabel: { color: tc.text } },
+            series: [{ type: 'bar', data: DATA.actions.map(a => a.count).reverse(), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#8b5cf6' }, { offset: 1, color: '#a78bfa' }]), borderRadius: [0, 4, 4, 0] }, label: { show: true, position: 'right', formatter: p => p.value + '次', color: tc.text, fontSize: 11 } }]
+        });
+
+        // Action: Distribution pie
+        if (charts.actionDist) charts.actionDist.dispose();
+        charts.actionDist = echarts.init(document.getElementById('chartActionDist'));
+        charts.actionDist.setOption({
+            tooltip: { trigger: 'item', formatter: p => `${p.name}<br/>${p.value}次 (${p.percent}%)` },
+            legend: { orient: 'vertical', right: 10, top: 'center', textStyle: { color: tc.text }, fontSize: 11 },
+            series: [{ type: 'pie', radius: ['35%', '65%'], center: ['40%', '50%'], data: DATA.actions.map((a, i) => ({ name: a.name, value: a.count, itemStyle: { color: tc.colors[i] } })), label: { color: tc.text, fontSize: 10, formatter: '{d}%' } }]
+        });
+
+        // ==================== INSIGHT CHARTS ====================
+
+        // Action Impact by Type
+        if (charts.actionImpactType) charts.actionImpactType.dispose();
+        const aib = DATA.analysis.actionImpactByType;
+        charts.actionImpactType = echarts.init(document.getElementById('chartActionImpactType'));
+        charts.actionImpactType.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>GMV变化: ${(p[0].value*100).toFixed(1)}%<br/>进店变化: ${(DATA.analysis.actionImpactByType.find(a=>a.type===p[0].name)?.avg_visitors_change*100||0).toFixed(1)}%<br/>正向率: ${(DATA.analysis.actionImpactByType.find(a=>a.type===p[0].name)?.positive_rate*100||0).toFixed(0)}%` },
+            grid: { left: 60, right: 30, top: 20, bottom: 40 },
+            xAxis: { type: 'category', data: aib.map(a => a.type), axisLabel: { color: tc.text, fontSize: 12 }, axisLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'value', name: 'GMV变化率', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted, formatter: v => (v*100).toFixed(0) + '%' }, splitLine: { lineStyle: { color: tc.border } } },
+            series: [{
+                type: 'bar', data: aib.map(a => ({
+                    value: a.avg_gmv_change,
+                    itemStyle: { color: a.avg_gmv_change > 0 ? '#22c55e' : '#ef4444', borderRadius: [4, 4, 0, 0] }
+                })),
+                label: { show: true, position: 'top', formatter: p => (p.value*100).toFixed(1) + '%', color: tc.text, fontSize: 12, fontWeight: 'bold' }
+            }]
+        });
+
+        // Action-GMV Correlation scatter
+        if (charts.actionCorrelation) charts.actionCorrelation.dispose();
+        const corrData = DATA.analysis.actionGmvCorrelation;
+        const corrCoef = DATA.analysis.correlationCoefficient;
+        charts.actionCorrelation = echarts.init(document.getElementById('chartActionCorrelation'));
+        charts.actionCorrelation.setOption({
+            title: { text: `相关系数: ${corrCoef.toFixed(3)}`, left: 'center', top: 10, textStyle: { color: tc.text, fontSize: 14 } },
+            tooltip: { trigger: 'item', formatter: p => `${p.data[2]}<br/>动作: ${p.data[0]}次<br/>次日GMV: ¥${p.data[1].toLocaleString()}` },
+            grid: { left: 60, right: 30, top: 50, bottom: 40 },
+            xAxis: { type: 'value', name: '当日动作次数', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted }, splitLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'value', name: '次日GMV(万元)', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted, formatter: v => (v/10000).toFixed(0) + '万' }, splitLine: { lineStyle: { color: tc.border } } },
+            series: [{
+                type: 'scatter', data: corrData.map(d => [d.action_count, d.next_day_gmv, d.action_date]),
+                symbolSize: 12, itemStyle: { color: '#8b5cf6' },
+                label: { show: false }
+            }]
+        });
+
+        // Type-Item Heatmap
+        if (charts.typeItemHeatmap) charts.typeItemHeatmap.dispose();
+        const matrix = DATA.analysis.typeItemMatrix;
+        const subs = [...new Set(matrix.map(m => m.sub))];
+        const types = [...new Set(matrix.map(m => m.leader_type))];
+        const heatmapData = matrix.filter(m => m.gmv > 0).map(m => [types.indexOf(m.leader_type), subs.indexOf(m.sub), m.gmv / 10000]);
+        charts.typeItemHeatmap = echarts.init(document.getElementById('chartTypeItemHeatmap'));
+        charts.typeItemHeatmap.setOption({
+            tooltip: { formatter: p => `${types[p.data[0]]} → ${subs[p.data[1]]}<br/>GMV: ${p.data[2].toFixed(1)}万元` },
+            grid: { left: 100, right: 40, top: 20, bottom: 120 },
+            xAxis: { type: 'category', data: types, axisLabel: { color: tc.text, fontSize: 12, rotate: 0 }, axisLine: { lineStyle: { color: tc.border } }, splitArea: { show: true, areaStyle: { color: ['rgba(255,255,255,0.02)', 'rgba(255,255,255,0.05)'] } } },
+            yAxis: { type: 'category', data: subs, axisLabel: { color: tc.text, fontSize: 11 }, axisLine: { lineStyle: { color: tc.border } }, splitArea: { show: true } },
+            visualMap: { min: 0, max: Math.max(...heatmapData.map(d => d[2])), calculable: true, orient: 'horizontal', left: 'center', bottom: 0, textStyle: { color: tc.text }, inRange: { color: ['#f0f9ff', '#3b82f6', '#1d4ed8'] } },
+            series: [{ type: 'heatmap', data: heatmapData, label: { show: true, color: tc.text, fontSize: 10, formatter: p => p.data[2].toFixed(1) + '万' }, emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)' } } }]
+        });
+
+        // Type-Item Conversion Heatmap
+        if (charts.typeItemConversion) charts.typeItemConversion.dispose();
+        const convData = matrix.filter(m => m.gmv > 0).map(m => [types.indexOf(m.leader_type), subs.indexOf(m.sub), m.conversion * 100]);
+        charts.typeItemConversion = echarts.init(document.getElementById('chartTypeItemConversion'));
+        charts.typeItemConversion.setOption({
+            tooltip: { formatter: p => `${types[p.data[0]]} → ${subs[p.data[1]]}<br/>转化率: ${p.data[2].toFixed(2)}%` },
+            grid: { left: 100, right: 40, top: 20, bottom: 120 },
+            xAxis: { type: 'category', data: types, axisLabel: { color: tc.text, fontSize: 12 }, axisLine: { lineStyle: { color: tc.border } }, splitArea: { show: true } },
+            yAxis: { type: 'category', data: subs, axisLabel: { color: tc.text, fontSize: 11 }, axisLine: { lineStyle: { color: tc.border } }, splitArea: { show: true } },
+            visualMap: { min: 0, max: Math.max(...convData.map(d => d[2])), calculable: true, orient: 'horizontal', left: 'center', bottom: 0, textStyle: { color: tc.text }, inRange: { color: ['#fef3c7', '#f97316', '#dc2626'] } },
+            series: [{ type: 'heatmap', data: convData, label: { show: true, color: tc.text, fontSize: 10, formatter: p => p.data[2].toFixed(1) + '%' }, emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)' } } }]
+        });
+
+        // Item Breakdown (stacked bar by leader type)
+        if (charts.itemBreakdown) charts.itemBreakdown.dispose();
+        const topSubs = subs.slice(0, 10);
+        charts.itemBreakdown = echarts.init(document.getElementById('chartItemBreakdown'));
+        const breakdownSeries = types.map(type => ({
+            name: type,
+            type: 'bar',
+            stack: 'total',
+            data: topSubs.map(sub => {
+                const m = matrix.find(x => x.leader_type === type && x.sub === sub);
+                return m && m.gmv > 0 ? m.gmv / 10000 : null;
+            }),
+            itemStyle: { color: typeColors[type] || '#64748b' }
+        }));
+        charts.itemBreakdown.setOption({
+            tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: p => { let s = p[0].name + '<br/>'; p.forEach(i => s += `${i.marker} ${i.seriesName}: ${i.value.toFixed(1)}万<br/>`); return s; } },
+            legend: { data: types, textStyle: { color: tc.text }, top: 0 },
+            grid: { left: 120, right: 30, top: 40, bottom: 30 },
+            xAxis: { type: 'value', name: 'GMV(万元)', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted }, splitLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'category', data: topSubs.reverse(), axisLabel: { color: tc.text, fontSize: 11 } },
+            series: breakdownSeries
+        });
+
+        // Strategy Matrix (radar or bar)
+        if (charts.strategyMatrix) charts.strategyMatrix.dispose();
+        const bt = DATA.analysis.bestTypePerItem.filter(b => b.best_gmv > 0);
+        charts.strategyMatrix = echarts.init(document.getElementById('chartStrategyMatrix'));
+        charts.strategyMatrix.setOption({
+            tooltip: { trigger: 'axis', formatter: p => `${p[0].name}<br/>最佳: ${p[0].seriesName}<br/>GMV: ${p[0].value.toFixed(1)}万<br/>转化率: ${(bt.find(b=>b.sub===p[0].name)?.best_conv*100||0).toFixed(1)}%<br/>ROI: ${bt.find(b=>b.sub===p[0].name)?.best_roi||0}x` },
+            legend: { data: types, textStyle: { color: tc.text }, top: 0 },
+            grid: { left: 120, right: 30, top: 40, bottom: 30 },
+            xAxis: { type: 'value', name: 'GMV(万元)', nameTextStyle: { color: tc.muted }, axisLabel: { color: tc.muted }, splitLine: { lineStyle: { color: tc.border } } },
+            yAxis: { type: 'category', data: bt.map(b => b.sub).reverse(), axisLabel: { color: tc.text, fontSize: 11 } },
+            series: types.map(type => ({
+                name: type, type: 'bar', stack: 'total',
+                data: bt.map(b => {
+                    const m = matrix.find(x => x.leader_type === type && x.sub === b.sub);
+                    return m ? m.gmv / 10000 : 0;
+                }).reverse(),
+                itemStyle: { color: typeColors[type] || '#64748b' }
+            }))
+        });
+    }
+
+    // Render tables
+    function renderTables() {
+        const leaderTypeMap = { '值得买': '导购型', '值得买星罗': '导购型', '哥登': '内容型', '哥登联盟': '内容型', '荣牛哥': '内容型', '荣牛哥联盟': '内容型', '荣牛哥联盟 ': '内容型', '多淘': '社群型', '多淘团队': '社群型', '集物美': '社群型', '合盈': '社群型', '合盈招商联盟': '社群型', '美豆科技': '社群型', '美豆科技联盟': '社群型', '社群扩散': '社群型', '社群扩散  ': '社群型' };
+        const badgeClass = { '导购型': 'badge-blue', '内容型': 'badge-orange', '社群型': 'badge-green', '其他': 'badge-gray' };
+
+        // Leader table
+        document.querySelector('#leaderTable tbody').innerHTML = DATA.leaders.map((l, i) => {
+            const rankClass = i < 3 ? `rank-${i+1}` : 'rank-other';
+            const type = leaderTypeMap[l.name] || '其他';
+            return `<tr>
+                <td><span class="rank-badge ${rankClass}">${i + 1}</span></td>
+                <td style="font-weight:600;cursor:pointer;color:#3b82f6" onclick="showLeaderDetail('${l.name}')">${l.name}</td>
+                <td><span class="badge ${badgeClass[type] || 'badge-gray'}">${type}</span></td>
+                <td style="font-weight:600">${(l.gmv / 10000).toFixed(1)}</td>
+                <td>${(l.commission / 10000).toFixed(2)}</td>
+                <td>${l.visitors.toLocaleString()}</td>
+                <td>${l.orders.toLocaleString()}</td>
+                <td>${(l.cost / 10000).toFixed(2)}</td>
+                <td>${l.items}</td>
+                <td style="font-weight:600;color:#22c55e">${l.roi.toFixed(1)}x</td>
+            </tr>`;
+        }).join('');
+
+        // Type table
+        document.querySelector('#typeTable tbody').innerHTML = DATA.types.map(t => {
+            const roi = (t.gmv / t.cost).toFixed(1);
+            return `<tr>
+                <td style="font-weight:600"><span class="badge ${badgeClass[t.name] || 'badge-gray'}">${t.name}</span></td>
+                <td style="font-weight:600">${(t.gmv / 10000).toFixed(1)}</td>
+                <td>${fmtPct(t.pct)}</td>
+                <td>${t.visitors.toLocaleString()}</td>
+                <td>${t.orders.toLocaleString()}</td>
+                <td>${(t.cost / 10000).toFixed(2)}</td>
+                <td style="font-weight:600;color:#22c55e">${roi}x</td>
+            </tr>`;
+        }).join('');
+
+        // Item table
+        document.querySelector('#itemTable tbody').innerHTML = DATA.items.map((item, i) => {
+            const rankClass = i < 3 ? `rank-${i+1}` : 'rank-other';
+            const avgPrice = item.orders > 0 ? (item.gmv / item.orders).toFixed(0) : '-';
+            return `<tr>
+                <td><span class="rank-badge ${rankClass}">${i + 1}</span></td>
+                <td style="font-weight:600">${item.sub}</td>
+                <td><span class="badge ${badgeClass[leaderTypeMap[item.leader]] || 'badge-gray'}">${item.leader}</span></td>
+                <td style="font-weight:600">${(item.gmv / 10000).toFixed(1)}</td>
+                <td>${item.visitors.toLocaleString()}</td>
+                <td>${item.orders.toLocaleString()}</td>
+                <td>${avgPrice}</td>
+            </tr>`;
+        }).join('');
+
+        // Action Impact Table
+        const impacts = DATA.analysis.actionImpact.sort((a, b) => b.gmv_change_pct - a.gmv_change_pct).slice(0, 20);
+        document.querySelector('#actionImpactTable tbody').innerHTML = impacts.map(a => {
+            const gmvClass = a.gmv_change_pct > 0 ? 'change-positive' : 'change-negative';
+            const visClass = a.visitors_change_pct > 0 ? 'change-positive' : 'change-negative';
+            return `<tr>
+                <td>${a.date}</td>
+                <td style="font-weight:600">${a.leader}</td>
+                <td><span class="badge ${badgeClass[a.leader_type] || 'badge-gray'}">${a.leader_type}</span></td>
+                <td style="max-width:200px;white-space:normal;font-size:12px">${a.description}</td>
+                <td>¥${(a.before_gmv/10000).toFixed(1)}万</td>
+                <td>¥${(a.after_gmv/10000).toFixed(1)}万</td>
+                <td class="${gmvClass}">${a.gmv_change_pct > 0 ? '+' : ''}${(a.gmv_change_pct*100).toFixed(1)}%</td>
+                <td class="${visClass}">${a.visitors_change_pct > 0 ? '+' : ''}${(a.visitors_change_pct*100).toFixed(1)}%</td>
+            </tr>`;
+        }).join('');
+    }
+
+    // Leader detail modal
+    function showLeaderDetail(name) {
+        const leader = DATA.leaders.find(l => l.name === name);
+        if (!leader) return;
+        const leaderTypeMap = { '值得买': '导购型', '值得买星罗': '导购型', '哥登': '内容型', '哥登联盟': '内容型', '荣牛哥': '内容型', '荣牛哥联盟': '内容型', '荣牛哥联盟 ': '内容型', '多淘': '社群型', '多淘团队': '社群型', '集物美': '社群型', '合盈': '社群型', '合盈招商联盟': '社群型', '美豆科技': '社群型', '美豆科技联盟': '社群型', '社群扩散': '社群型', '社群扩散  ': '社群型' };
+        const type = leaderTypeMap[name] || '其他';
+        const items = DATA.items.filter(i => i.leader === name).sort((a, b) => b.gmv - a.gmv);
+        const actions = DATA.actions.filter(a => a.name === name);
+
+        let html = `<h3>${name} <span class="badge badge-blue">${type}</span></h3>`;
+        html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0">`;
+        html += `<div class="kpi-card"><div class="kpi-label">GMV</div><div class="kpi-value">${(leader.gmv/10000).toFixed(1)}<span class="kpi-unit">万元</span></div></div>`;
+        html += `<div class="kpi-card"><div class="kpi-label">佣金</div><div class="kpi-value">${(leader.commission/10000).toFixed(2)}<span class="kpi-unit">万元</span></div></div>`;
+        html += `<div class="kpi-card"><div class="kpi-label">进店人数</div><div class="kpi-value">${leader.visitors.toLocaleString()}</div></div>`;
+        html += `<div class="kpi-card"><div class="kpi-label">ROI</div><div class="kpi-value">${leader.roi.toFixed(1)}<span class="kpi-unit">x</span></div></div>`;
+        html += `</div>`;
+        if (items.length > 0) {
+            html += `<h4 style="margin:16px 0 8px;font-size:14px">带货商品 TOP ${Math.min(items.length, 5)}</h4>`;
+            html += `<table><thead><tr><th>商品</th><th>GMV(万)</th><th>进店</th></tr></thead><tbody>`;
+            items.slice(0, 5).forEach(item => { html += `<tr><td>${item.sub}</td><td>${(item.gmv/10000).toFixed(1)}</td><td>${item.visitors.toLocaleString()}</td></tr>`; });
+            html += `</tbody></table>`;
+        }
+        if (actions.length > 0) { html += `<h4 style="margin:16px 0 8px;font-size:14px">动作次数: ${actions[0].count}次</h4>`; }
+        document.getElementById('modalBody').innerHTML = html;
+        document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    function closeModal(e) {
+        if (e.target === document.getElementById('modalOverlay')) { document.getElementById('modalOverlay').classList.remove('show'); }
+    }
+
+
+    // ==================== INSIGHT RENDERING FOR EACH TAB ====================
+
+    function renderOverviewInsights() {
+        const s = DATA.summary;
+        const daily = DATA.daily;
+        const peakDay = daily.reduce((a, b) => a.gmv > b.gmv ? a : b);
+        const peakDate = peakDay.date.slice(5);
+        const peakGmv = (peakDay.gmv / 10000).toFixed(1);
+        const lowDay = daily.reduce((a, b) => a.gmv < b.gmv ? a : b);
+        const lowDate = lowDay.date.slice(5);
+        const lowGmv = (lowDay.gmv / 10000).toFixed(1);
+        const prePeak = daily.filter(d => d.date < '2026-05-31');
+        const postPeak = daily.filter(d => d.date >= '2026-05-31');
+        const preAvg = prePeak.reduce((s, d) => s + d.gmv, 0) / prePeak.length;
+        const postAvg = postPeak.reduce((s, d) => s + d.gmv, 0) / postPeak.length;
+        const changePct = ((postAvg - preAvg) / preAvg * 100).toFixed(1);
+        const topLeader = DATA.leaders[0];
+        const topLeaderPct = (topLeader.gmv / s.totalGmv * 100).toFixed(1);
+
+        let html = '<div style="display:grid;gap:12px">';
+        html += '<div class="insight-item"><h4>\ud83d\udcca \u6574\u4f53\u8868\u73b0</h4>';
+        html += '<div class="detail">618\u671f\u95f4\uff085/13-6/18\uff09\u6dd8\u5ba2\u6e20\u9053\u5171\u5e26\u6765 <strong>' + fmt(s.totalGmv) + '\u5143</strong> GMV\uff0cROI \u8fbe <strong>' + s.roi.toFixed(1) + 'x</strong>\uff0c\u6574\u4f53\u6295\u653e\u6548\u7387\u4f18\u79c0\u3002</div></div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcc8 \u5cf0\u503c\u4e0e\u4f4e\u8c37</h4>';
+        html += '<div class="detail">GMV\u5cf0\u503c\u51fa\u73b0\u5728 <strong>' + peakDate + '</strong>\uff08' + peakGmv + '\u4e07\u5143\uff09\uff0c\u5bf9\u5e94618\u5f00\u95e8\u7ea2\u7206\u53d1\u671f\uff1b\u6700\u4f4e\u8c37\u5728 <strong>' + lowDate + '</strong>\uff08' + lowGmv + '\u4e07\u5143\uff09\uff0c\u4e3a\u6d3b\u52a8\u524d\u671f\u84c4\u6c34\u9636\u6bb5\u3002</div></div>';
+        html += '<div class="insight-item"><h4>\ud83d\udd04 \u9636\u6bb5\u5bf9\u6bd4</h4>';
+        html += '<div class="detail">5/31\u5f00\u95e8\u7ea2\u524d\u65e5\u5747GMV ' + (preAvg/10000).toFixed(1) + '\u4e07\u5143\uff0c\u5f00\u95e8\u7ea2\u540e\u65e5\u5747 ' + (postAvg/10000).toFixed(1) + '\u4e07\u5143\uff0c\u53d8\u5316 <span class="' + (changePct > 0 ? 'change-positive' : 'change-negative') + '">' + (changePct > 0 ? '+' : '') + changePct + '%</span>\u3002\u8bf4\u660e618\u7206\u53d1\u671f\u540e\u6d41\u91cf\u6709\u6240\u56de\u843d\u3002</div></div>';
+        html += '<div class="insight-item"><h4>\ud83c\udfc6 \u56e2\u957f\u96c6\u4e2d\u5ea6</h4>';
+        html += '<div class="detail">TOP1\u56e2\u957f\u300c' + topLeader.name + '\u300d\u8d21\u732e\u4e86 <strong>' + topLeaderPct + '%</strong> \u7684\u6dd8\u5ba2GMV\uff0c\u5934\u90e8\u96c6\u4e2d\u5ea6\u8f83\u9ad8\uff0c\u5efa\u8bae\u9002\u5f53\u5206\u6563\u98ce\u9669\u3002</div></div>';
+        html += '</div>';
+        document.getElementById('overviewInsights').innerHTML = html;
+    }
+
+    function renderTrendInsights() {
+        const daily = DATA.daily;
+        const sorted = [...daily].sort((a, b) => b.gmv - a.gmv);
+        const top3 = sorted.slice(0, 3);
+        const bottom3 = sorted.slice(-3);
+        const firstWeek = daily.slice(0, 7);
+        const lastWeek = daily.slice(-7);
+        const firstWeekConv = firstWeek.reduce((s, d) => s + d.conversion, 0) / firstWeek.length;
+        const lastWeekConv = lastWeek.reduce((s, d) => s + d.conversion, 0) / lastWeek.length;
+        const convChange = ((lastWeekConv - firstWeekConv) / firstWeekConv * 100).toFixed(1);
+        const totalGmv = daily.reduce((s, d) => s + d.gmv, 0);
+        const totalCost = daily.reduce((s, d) => s + d.cost, 0);
+        const avgDailyCost = (totalCost / daily.length / 10000).toFixed(2);
+
+        let html = '<div style="display:grid;gap:12px">';
+        html += '<div class="insight-item"><h4>\ud83d\udcc5 618\u8282\u594f\u5206\u6790</h4>';
+        html += '<div class="detail"><strong>TOP 3 \u9ad8\u5cf0\u65e5</strong>\uff1a' + top3.map(d => d.date.slice(5) + '\uff08' + (d.gmv/10000).toFixed(1) + '\u4e07\uff09').join('\u3001') + '\u3002\u9ad8\u5cf0\u96c6\u4e2d\u57285\u6708\u4e0b\u65ec\u81f36\u6708\u521d\uff0c\u5bf9\u5e94\u9884\u552e\u671f\u548c\u5f00\u95e8\u7ea2\u3002</div>';
+        html += '<div class="detail"><strong>TOP 3 \u4f4e\u8c37\u65e5</strong>\uff1a' + bottom3.map(d => d.date.slice(5) + '\uff08' + (d.gmv/10000).toFixed(1) + '\u4e07\uff09').join('\u3001') + '\u3002\u4f4e\u8c37\u4e3b\u8981\u51fa\u73b0\u5728\u6d3b\u52a8\u524d\u671f\u548c6\u6708\u4e2d\u65ec\u3002</div></div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcca \u8f6c\u5316\u7387\u8d70\u52bf</h4>';
+        html += '<div class="detail">\u9996\u5468\u5e73\u5747\u8f6c\u5316\u7387 ' + (firstWeekConv*100).toFixed(2) + '%\uff0c\u672b\u5468\u5e73\u5747 ' + (lastWeekConv*100).toFixed(2) + '%\uff0c\u53d8\u5316 <span class="' + (convChange > 0 ? 'change-positive' : 'change-negative') + '">' + (convChange > 0 ? '+' : '') + convChange + '%</span>\u3002' + (convChange > 0 ? '\u540e\u671f\u8f6c\u5316\u6548\u7387\u63d0\u5347\uff0c\u8bf4\u660e\u6d3b\u52a8\u6c1b\u56f4\u548c\u4f18\u60e0\u529b\u5ea6\u6709\u6548\u4fc3\u8fdb\u4e86\u8d2d\u4e70\u51b3\u7b56\u3002' : '\u540e\u671f\u8f6c\u5316\u6548\u7387\u6709\u6240\u4e0b\u964d\uff0c\u53ef\u80fd\u4e0e\u6d41\u91cf\u8d28\u91cf\u4e0b\u964d\u6216\u7ade\u54c1\u5206\u6d41\u6709\u5173\u3002') + '</div></div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcb0 \u6295\u5165\u4ea7\u51fa\u6548\u7387</h4>';
+        html += '<div class="detail">\u65e5\u5747\u652f\u51fa\u8d39\u7528 <strong>' + avgDailyCost + '\u4e07\u5143</strong>\uff0c\u6574\u4f53ROI <strong>' + (totalGmv/totalCost).toFixed(1) + 'x</strong>\u3002\u652f\u51fa\u9ad8\u5cf0\u4e0eGMV\u9ad8\u5cf0\u57fa\u672c\u540c\u6b65\uff0c\u8bf4\u660e\u8d39\u7528\u6295\u653e\u8282\u594f\u5408\u7406\u3002</div></div>';
+        html += '</div>';
+        document.getElementById('trendInsights').innerHTML = html;
+    }
+
+    function renderLeaderInsights() {
+        const leaders = DATA.leaders;
+        const avgRoi = leaders.reduce((s, l) => s + l.roi, 0) / leaders.length;
+        const maxRoi = leaders.reduce((a, b) => a.roi > b.roi ? a : b);
+        const minRoi = leaders.reduce((a, b) => a.roi < b.roi ? a : b);
+        const top1Pct = (leaders[0].gmv / leaders.reduce((s, l) => s + l.gmv, 0) * 100).toFixed(1);
+        const top3Pct = (leaders.slice(0, 3).reduce((s, l) => s + l.gmv, 0) / leaders.reduce((s, l) => s + l.gmv, 0) * 100).toFixed(1);
+
+        let html = '<div style="display:grid;gap:12px">';
+        html += '<div class="insight-item"><h4>\ud83c\udfc6 \u5934\u90e8\u6548\u5e94\u663e\u8457</h4>';
+        html += '<div class="detail">TOP1\u300c' + leaders[0].name + '\u300d\u8d21\u732e\u4e86 <strong>' + top1Pct + '%</strong> \u7684\u6dd8\u5ba2GMV\uff0cTOP3\u5408\u8ba1\u5360\u6bd4 <strong>' + top3Pct + '%</strong>\u3002\u5934\u90e8\u56e2\u957f\u662f\u6dd8\u5ba2\u6e20\u9053\u7684\u7edd\u5bf9\u4e3b\u529b\uff0c\u4f46\u8fc7\u5ea6\u4f9d\u8d56\u5355\u4e00\u56e2\u957f\u5b58\u5728\u98ce\u9669\u3002</div></div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcca ROI\u5206\u5e03</h4>';
+        html += '<div class="detail">\u5404\u56e2\u957fROI\u5747\u5728 <strong>' + minRoi.roi.toFixed(1) + 'x - ' + maxRoi.roi.toFixed(1) + 'x</strong> \u533a\u95f4\uff0c\u5e73\u5747 <strong>' + avgRoi.toFixed(1) + 'x</strong>\u3002\u6700\u9ad8ROI\u6765\u81ea\u300c' + maxRoi.name + '\u300d\uff08' + maxRoi.roi.toFixed(1) + 'x\uff09\uff0c\u6700\u4f4e\u6765\u81ea\u300c' + minRoi.name + '\u300d\uff08' + minRoi.roi.toFixed(1) + 'x\uff09\u3002\u6574\u4f53\u6295\u653e\u6548\u7387\u5747\u8861\uff0c\u65e0\u660e\u663e\u4e8f\u635f\u6e20\u9053\u3002</div></div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcc8 \u6548\u7387\u5bf9\u6bd4</h4>';
+        html += '<div class="detail">\u300c' + leaders[0].name + '\u300d\u867d\u7136GMV\u6700\u9ad8\uff0c\u4f46ROI\u4e3a ' + leaders[0].roi.toFixed(1) + 'x\uff0c\u7565\u4f4e\u4e8e\u5e73\u5747\u6c34\u5e73\u3002\u5efa\u8bae\u5173\u6ce8\u5176\u6d41\u91cf\u8d28\u91cf\uff0c\u540c\u65f6\u6316\u6398ROI\u66f4\u9ad8\u4f46GMV\u504f\u4f4e\u7684\u56e2\u957f\uff08\u5982\u300c' + maxRoi.name + '\u300d\uff09\u7684\u589e\u91cf\u6f5c\u529b\u3002</div></div>';
+        html += '</div>';
+        document.getElementById('leaderInsights').innerHTML = html;
+    }
+
+    function renderTypeInsights() {
+        const types = DATA.types;
+        const totalGmv = types.reduce((s, t) => s + t.gmv, 0);
+        const totalVisitors = types.reduce((s, t) => s + t.visitors, 0);
+        const bestRoiType = types.reduce((a, b) => (a.gmv / a.cost) > (b.gmv / b.cost) ? a : b);
+        const bestRoi = (bestRoiType.gmv / bestRoiType.cost).toFixed(1);
+        const bestConvType = types.reduce((a, b) => (a.orders / a.visitors) > (b.orders / b.visitors) ? a : b);
+        const bestConv = (bestConvType.orders / bestConvType.visitors * 100).toFixed(2);
+        const gmvPerVisitor = types.map(t => ({ name: t.name, gmvPerV: t.gmv / t.visitors }));
+        const bestGmvPerV = gmvPerVisitor.reduce((a, b) => a.gmvPerV > b.gmvPerV ? a : b);
+
+        let html = '<div style="display:grid;gap:12px">';
+        html += '<div class="insight-item"><h4>\ud83c\udfaf \u5bfc\u8d2d\u578b\u4e3b\u5bfcGMV</h4>';
+        const guideType = types.find(t => t.name === '\u5bfc\u8d2d\u578b');
+        if (guideType) {
+            html += '<div class="detail">\u5bfc\u8d2d\u578b\uff08\u503c\u5f97\u4e70\uff09\u8d21\u732e\u4e86 <strong>' + (guideType.gmv / totalGmv * 100).toFixed(1) + '%</strong> \u7684GMV\uff0c\u4f46\u8fdb\u5e97\u4eba\u6570\u4ec5\u5360 <strong>' + (guideType.visitors / totalVisitors * 100).toFixed(1) + '%</strong>\u3002\u8bf4\u660e\u5bfc\u8d2d\u578b\u6d41\u91cf\u7cbe\u51c6\u3001\u8f6c\u5316\u6548\u7387\u9ad8\uff0c\u662f"\u5c11\u800c\u7cbe"\u7684\u5178\u578b\u4ee3\u8868\u3002</div>';
+        }
+        html += '</div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcca \u793e\u7fa4\u578b\u6d41\u91cf\u5927\u4f46\u8f6c\u5316\u504f\u4f4e</h4>';
+        const socialType = types.find(t => t.name === '\u793e\u7fa4\u578b');
+        if (socialType) {
+            html += '<div class="detail">\u793e\u7fa4\u578b\u8fdb\u5e97\u4eba\u6570\u5360\u6bd4 <strong>' + (socialType.visitors / totalVisitors * 100).toFixed(1) + '%</strong>\uff0c\u4f46GMV\u5360\u6bd4 <strong>' + (socialType.gmv / totalGmv * 100).toFixed(1) + '%</strong>\u3002\u6d41\u91cf\u89c4\u6a21\u5927\u4f46\u8f6c\u5316\u6548\u7387\u6709\u5f85\u63d0\u5347\uff0c\u5efa\u8bae\u4f18\u5316\u9009\u54c1\u548c\u4f63\u91d1\u7b56\u7565\u3002</div>';
+        }
+        html += '</div>';
+        html += '<div class="insight-item"><h4>\ud83d\udca1 \u5185\u5bb9\u578b\u79cd\u8349\u4ef7\u503c</h4>';
+        const contentType = types.find(t => t.name === '\u5185\u5bb9\u578b');
+        if (contentType) {
+            html += '<div class="detail">\u5185\u5bb9\u578b\uff08\u54e5\u767b\u3001\u8363\u725b\u54e5\uff09GMV\u5360\u6bd4 <strong>' + (contentType.gmv / totalGmv * 100).toFixed(1) + '%</strong>\uff0c\u8f6c\u5316\u7387 <strong>' + (contentType.orders / contentType.visitors * 100).toFixed(2) + '%</strong>\u3002\u5185\u5bb9\u578b\u56e2\u957f\u5728\u6df1\u5ea6\u8bb2\u89e3\u548c\u79cd\u8349\u65b9\u9762\u6709\u72ec\u7279\u4f18\u52bf\uff0c\u9002\u5408\u5dee\u5f02\u5316\u4ea7\u54c1\u63a8\u5e7f\u3002</div>';
+        }
+        html += '</div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcc8 \u6700\u4f18ROI\u7c7b\u578b</h4>';
+        html += '<div class="detail"><strong>' + bestRoiType.name + '</strong> ROI\u6700\u9ad8\uff08' + bestRoi + 'x\uff09\uff0c<strong>' + bestConvType.name + '</strong> \u8f6c\u5316\u7387\u6700\u9ad8\uff08' + bestConv + '%\uff09\uff0c<strong>' + bestGmvPerV.name + '</strong> \u5355\u5ba2\u4ea7\u51fa\u6700\u9ad8\uff08\u00a5' + bestGmvPerV.gmvPerV.toFixed(1) + '/\u4eba\uff09\u3002\u4e0d\u540c\u7c7b\u578b\u5404\u6709\u4f18\u52bf\uff0c\u5efa\u8bae\u7ec4\u5408\u4f7f\u7528\u3002</div></div>';
+        html += '</div>';
+        document.getElementById('typeInsights').innerHTML = html;
+    }
+
+    function renderItemInsights() {
+        const items = DATA.items;
+        const totalGmv = items.reduce((s, i) => s + i.gmv, 0);
+        const top3 = items.slice(0, 3);
+        const top3Pct = (top3.reduce((s, i) => s + i.gmv, 0) / totalGmv * 100).toFixed(1);
+
+        const bestConvItem = items.filter(i => i.orders > 0).reduce((a, b) => (a.orders / a.visitors) > (b.orders / b.visitors) ? a : b);
+        const bestConvRate = (bestConvItem.orders / bestConvItem.visitors * 100).toFixed(2);
+        const y700Items = items.filter(i => i.sub.includes('Y700'));
+        const y900Items = items.filter(i => i.sub.includes('Y900'));
+        const xiaoxinItems = items.filter(i => i.sub.includes('\u5c0f\u65b0') || i.sub.includes('Pad'));
+        const y700Gmv = y700Items.reduce((s, i) => s + i.gmv, 0);
+        const y900Gmv = y900Items.reduce((s, i) => s + i.gmv, 0);
+        const xiaoxinGmv = xiaoxinItems.reduce((s, i) => s + i.gmv, 0);
+
+        let html = '<div style="display:grid;gap:12px">';
+        html += '<div class="insight-item"><h4>\ud83d\udd25 \u7206\u6b3e\u96c6\u4e2d\u5ea6\u6781\u9ad8</h4>';
+        html += '<div class="detail">TOP3\u5546\u54c1\u5408\u8ba1\u8d21\u732e <strong>' + top3Pct + '%</strong> \u7684\u6dd8\u5ba2GMV\uff0c\u5176\u4e2d\u300c' + top3[0].sub + '\u300d\u5355\u54c1\u8d21\u732e <strong>' + (top3[0].gmv / totalGmv * 100).toFixed(1) + '%</strong>\u3002\u7206\u6b3e\u6548\u5e94\u663e\u8457\uff0c\u4f46\u4e2d\u957f\u5c3e\u5546\u54c1\u6f5c\u529b\u672a\u5145\u5206\u6316\u6398\u3002</div></div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcca \u7cfb\u5217\u8868\u73b0\u5bf9\u6bd4</h4>';
+        html += '<div class="detail"><strong>\u62ef\u6551\u8005\u7cfb\u5217\uff08Y700+Y900\uff09</strong>\uff1a\u5408\u8ba1 ' + ((y700Gmv + y900Gmv) / 10000).toFixed(1) + '\u4e07\u5143\uff0c\u5360\u6bd4 ' + ((y700Gmv + y900Gmv) / totalGmv * 100).toFixed(1) + '%\uff0c\u662f\u6dd8\u5ba2\u6e20\u9053\u7684\u7edd\u5bf9\u6838\u5fc3\u3002</div>';
+        html += '<div class="detail"><strong>\u5c0f\u65b0/Pad\u7cfb\u5217</strong>\uff1a\u5408\u8ba1 ' + (xiaoxinGmv / 10000).toFixed(1) + '\u4e07\u5143\uff0c\u5360\u6bd4 ' + (xiaoxinGmv / totalGmv * 100).toFixed(1) + '%\uff0c\u8868\u73b0\u7a33\u5065\u4f46\u7f3a\u4e4f\u7206\u6b3e\u3002</div></div>';
+        html += '<div class="insight-item"><h4>\ud83d\udcc8 \u8f6c\u5316\u6548\u7387\u4e4b\u661f</h4>';
+        html += '<div class="detail">\u300c' + bestConvItem.sub + '\u300d\u8f6c\u5316\u7387\u6700\u9ad8\uff08' + bestConvRate + '%\uff09\uff0c\u8bf4\u660e\u8be5\u4ea7\u54c1\u4e0e\u6dd8\u5ba2\u6e20\u9053\u9ad8\u5ea6\u5339\u914d\uff0c\u5efa\u8bae\u52a0\u5927\u63a8\u5e7f\u529b\u5ea6\u3002</div></div>';
+
+        html += '</div>';
+        document.getElementById('itemInsights').innerHTML = html;
+    }
+
+    function renderActionSummary() {
+        const actions = DATA.actions;
+        const leaderTypeMap = { '\u503c\u5f97\u4e70': '\u5bfc\u8d2d\u578b', '\u503c\u5f97\u4e70\u661f\u7f57': '\u5bfc\u8d2d\u578b', '\u54e5\u767b': '\u5185\u5bb9\u578b', '\u54e5\u767b\u8054\u76df': '\u5185\u5bb9\u578b', '\u8363\u725b\u54e5': '\u5185\u5bb9\u578b', '\u8363\u725b\u54e5\u8054\u76df': '\u5185\u5bb9\u578b', '\u8363\u725b\u54e5\u8054\u76df ': '\u5185\u5bb9\u578b', '\u591a\u6dd8': '\u793e\u7fa4\u578b', '\u591a\u6dd8\u56e2\u961f': '\u793e\u7fa4\u578b', '\u96c6\u7f8e\u7269': '\u793e\u7fa4\u578b', '\u5408\u76c8': '\u793e\u7fa4\u578b', '\u5408\u76c8\u62db\u5546\u8054\u76df': '\u793e\u7fa4\u578b', '\u7f8e\u8c46\u79d1\u6280': '\u793e\u7fa4\u578b', '\u7f8e\u8c46\u79d1\u6280\u8054\u76df': '\u793e\u7fa4\u578b', '\u793e\u7fa4\u6269\u6563': '\u793e\u7fa4\u578b', '\u793e\u7fa4\u6269\u6563  ': '\u793e\u7fa4\u578b' };
+
+        const typeActions = {};
+        actions.forEach(a => {
+            const type = leaderTypeMap[a.name] || '\u5176\u4ed6';
+            if (!typeActions[type]) typeActions[type] = [];
+            typeActions[type].push(a);
+        });
+
+        let html = '<div style="display:grid;gap:16px">';
+        html += '<div class="insight-item"><h4>\ud83d\udcca \u6574\u4f53\u52a8\u4f5c\u6982\u89c8</h4>';
+        html += '<div class="detail">618\u671f\u95f4\u5171\u8bb0\u5f55 <strong>' + DATA.summary.actionCount + '</strong> \u6b21\u56e2\u957f\u52a8\u4f5c\uff0c\u6d89\u53ca <strong>' + actions.length + '</strong> \u4e2a\u56e2\u957f\u3002\u52a8\u4f5c\u9ad8\u5cf0\u671f\u96c6\u4e2d\u57285\u6708\u4e2d\u65ec\uff08\u9884\u552e\u671f\uff09\u548c6\u6708\u521d\uff08\u7206\u53d1\u671f\uff09\u3002</div></div>';
+
+        html += '<h4 style="margin:8px 0 4px;font-size:15px">\u5404\u56e2\u957f\u52a8\u4f5c\u56de\u987e</h4>';
+        actions.sort((a, b) => b.count - a.count).forEach(a => {
+            const type = leaderTypeMap[a.name] || '\u5176\u4ed6';
+            const badgeClass = { '\u5bfc\u8d2d\u578b': 'badge-blue', '\u5185\u5bb9\u578b': 'badge-orange', '\u793e\u7fa4\u578b': 'badge-green', '\u5176\u4ed6': 'badge-gray' }[type] || 'badge-gray';
+            html += '<div class="insight-item" style="padding:12px">';
+            html += '<h4><span class="badge ' + badgeClass + '">' + type + '</span> ' + a.name + '\uff08' + a.count + '\u6b21\u52a8\u4f5c\uff09</h4>';
+
+            const leaderActions = DATA.actionDetails ? DATA.actionDetails.filter(ad => ad.leader === a.name) : [];
+            if (leaderActions.length > 0) {
+                const actionTypes = {};
+                leaderActions.forEach(ad => {
+                    const desc = ad.description || '\u672a\u77e5\u52a8\u4f5c';
+                    if (desc.includes('\u53d1') || desc.includes('\u63a8') || desc.includes('\u5e03')) actionTypes['\u5185\u5bb9\u53d1\u5e03'] = (actionTypes['\u5185\u5bb9\u53d1\u5e03'] || 0) + 1;
+                    else if (desc.includes('\u4f63') || desc.includes('\u4ef7') || desc.includes('\u8c03')) actionTypes['\u4f63\u91d1/\u4ef7\u683c\u8c03\u6574'] = (actionTypes['\u4f63\u91d1/\u4ef7\u683c\u8c03\u6574'] || 0) + 1;
+                    else if (desc.includes('\u6d3b') || desc.includes('\u4fc3') || desc.includes('\u5238')) actionTypes['\u6d3b\u52a8/\u4f18\u60e0\u5238'] = (actionTypes['\u6d3b\u52a8/\u4f18\u60e0\u5238'] || 0) + 1;
+                    else if (desc.includes('\u9009') || desc.includes('\u54c1') || desc.includes('\u4e0a')) actionTypes['\u9009\u54c1/\u4e0a\u65b0'] = (actionTypes['\u9009\u54c1/\u4e0a\u65b0'] || 0) + 1;
+                    else actionTypes['\u5176\u4ed6'] = (actionTypes['\u5176\u4ed6'] || 0) + 1;
+                });
+                html += '<div class="detail">\u4e3b\u8981\u52a8\u4f5c\u7c7b\u578b\uff1a' + Object.entries(actionTypes).map(([k, v]) => k + ' ' + v + '\u6b21').join('\u3001') + '</div>';
+                const examples = leaderActions.slice(0, 3);
+                html += '<div class="detail">\u5178\u578b\u52a8\u4f5c\uff1a' + examples.map(e => e.date + ' ' + e.description).join('\uff1b') + '</div>';
+            } else {
+                html += '<div class="detail">\u52a8\u4f5c\u4ee5\u65e5\u5e38\u63a8\u5e7f\u548c\u4f63\u91d1\u7ef4\u62a4\u4e3a\u4e3b\uff0c\u8282\u594f\u5e73\u7a33\u3002</div>';
+            }
+            html += '</div>';
+        });
+
+        html += '<h4 style="margin:16px 0 8px;font-size:15px">\u4e0d\u540c\u7c7b\u578b\u56e2\u957f\u52a8\u4f5c\u5dee\u5f02</h4>';
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">';
+
+        const guideActions = typeActions['\u5bfc\u8d2d\u578b'] || [];
+        const guideTotal = guideActions.reduce((s, a) => s + a.count, 0);
+        html += '<div class="insight-item" style="border-left:3px solid #3b82f6">';
+        html += '<h4 style="font-size:14px">\ud83d\udd35 \u5bfc\u8d2d\u578b\uff08\u503c\u5f97\u4e70\uff09</h4>';
+        html += '<div class="detail">\u52a8\u4f5c <strong>' + guideTotal + '</strong> \u6b21\uff0cGMV\u4ea7\u51fa\u6700\u9ad8\u3002\u52a8\u4f5c\u7279\u70b9\uff1a<strong>\u5c11\u800c\u7cbe</strong>\uff0c\u96c6\u4e2d\u5728\u5927\u4fc3\u8282\u70b9\u96c6\u4e2d\u6295\u653e\uff0c\u5355\u6b21\u52a8\u4f5c\u4ea7\u51fa\u6548\u7387\u6781\u9ad8\u3002\u4ee5\u5185\u5bb9\u53d1\u5e03\u548c\u4ef7\u683c\u8c03\u6574\u4e3a\u4e3b\uff0c\u6ce8\u91cd\u5185\u5bb9\u8d28\u91cf\u548c\u65f6\u673a\u9009\u62e9\u3002</div></div>';
+
+        const contentActions = typeActions['\u5185\u5bb9\u578b'] || [];
+        const contentTotal = contentActions.reduce((s, a) => s + a.count, 0);
+        const rongCount = actions.find(a => a.name && a.name.includes('\u8363\u725b')) ? actions.find(a => a.name && a.name.includes('\u8363\u725b')).count : 0;
+        html += '<div class="insight-item" style="border-left:3px solid #f97316">';
+        html += '<h4 style="font-size:14px">\ud83d\udfe0 \u5185\u5bb9\u578b\uff08\u54e5\u767b\u3001\u8363\u725b\u54e5\uff09</h4>';
+        html += '<div class="detail">\u52a8\u4f5c <strong>' + contentTotal + '</strong> \u6b21\u3002\u52a8\u4f5c\u7279\u70b9\uff1a<strong>\u9ad8\u9891\u79cd\u8349</strong>\uff0c\u8363\u725b\u54e5\u52a8\u4f5c\u6700\u9891\u7e41\uff08' + rongCount + '\u6b21\uff09\uff0c\u4ee5\u5185\u5bb9\u53d1\u5e03\u548c\u9009\u54c1\u4e3a\u4e3b\uff0c\u6ce8\u91cd\u6df1\u5ea6\u8bb2\u89e3\u548c\u4ea7\u54c1\u5bf9\u6bd4\u3002</div></div>';
+
+        const socialActions = typeActions['\u793e\u7fa4\u578b'] || [];
+        const socialTotal = socialActions.reduce((s, a) => s + a.count, 0);
+        const duoCount = actions.find(a => a.name && a.name.includes('\u591a\u6dd8')) ? actions.find(a => a.name && a.name.includes('\u591a\u6dd8')).count : 0;
+        html += '<div class="insight-item" style="border-left:3px solid #22c55e">';
+        html += '<h4 style="font-size:14px">\ud83d\udfe2 \u793e\u7fa4\u578b\uff08\u591a\u6dd8\u3001\u96c6\u7f8e\u7269\u7b49\uff09</h4>';
+        html += '<div class="detail">\u52a8\u4f5c <strong>' + socialTotal + '</strong> \u6b21\u3002\u52a8\u4f5c\u7279\u70b9\uff1a<strong>\u5e7f\u8986\u76d6</strong>\uff0c\u591a\u6dd8\u56e2\u961f\u52a8\u4f5c\u9891\u7e41\uff08' + duoCount + '\u6b21\uff09\uff0c\u4ee5\u6d3b\u52a8\u63a8\u5e7f\u548c\u4f63\u91d1\u8c03\u6574\u4e3a\u4e3b\uff0c\u6ce8\u91cd\u793e\u7fa4\u89e6\u8fbe\u548c\u4f18\u60e0\u529b\u5ea6\u3002</div></div>';
+
+        html += '</div>';
+
+        const guideLeader = DATA.leaders.find(l => l.name === '\u503c\u5f97\u4e70');
+        const rongLeader = DATA.leaders.find(l => l.name && l.name.includes('\u8363\u725b'));
+        html += '<div class="insight-item" style="margin-top:12px;background:hsl(var(--muted)/0.3);padding:16px;border-radius:var(--radius)">';
+        html += '<h4>\ud83d\udca1 \u5173\u952e\u53d1\u73b0</h4>';
+        html += '<div class="detail"><strong>\u52a8\u4f5c\u6570\u91cf \u2260 GMV\u4ea7\u51fa</strong>\uff1a\u503c\u5f97\u4e70\u4ec5 ' + guideTotal + ' \u6b21\u52a8\u4f5c\u4ea7\u51fa ' + (guideLeader ? (guideLeader.gmv / 10000).toFixed(1) : 'N/A') + '\u4e07GMV\uff0c\u800c\u8363\u725b\u54e5 ' + rongCount + ' \u6b21\u52a8\u4f5c\u4ea7\u51fa ' + (rongLeader ? (rongLeader.gmv / 10000).toFixed(1) : 'N/A') + '\u4e07\u3002\u8bf4\u660e<strong>\u52a8\u4f5c\u8d28\u91cf\u3001\u65f6\u673a\u9009\u62e9\u548c\u56e2\u957f\u6e20\u9053\u7279\u6027</strong>\u6bd4\u5355\u7eaf\u7684\u52a8\u4f5c\u9891\u6b21\u66f4\u91cd\u8981\u3002</div>';
+        html += '</div>';
+
+        html += '</div>';
+        document.getElementById('actionSummary').innerHTML = html;
+    }
+
+
+    // Initialize
+    function init() {
+        renderKPIs();
+        renderTypeKPIs();
+        renderTables();
+        renderAllCharts();
+        // Insight rendering
+        renderInsightActionKpi();
+        renderHighlights();
+        renderLowlights();
+        renderStrategyCards();
+        renderStrategySummary();
+        // Tab-specific insights
+        renderOverviewInsights();
+        renderTrendInsights();
+        renderLeaderInsights();
+        renderTypeInsights();
+        renderItemInsights();
+        renderActionSummary();
+        window.addEventListener('resize', () => Object.values(charts).forEach(c => c && c.resize()));
+    }
+
+    if (typeof DATA !== 'undefined' && DATA) { init(); }
+    else { window.addEventListener('load', () => { if (typeof DATA !== 'undefined' && DATA) init(); }); }
+    </script>
+</body>
+</html>
